@@ -11,7 +11,16 @@ const MotionLink = motion.create(Link)
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative isolate">
+      {/* Sfondo: libreria attenuata da un velo crema translucido, così il testo resta leggibile.
+          L'immagine va salvata in public/library-bg.jpg (vedi nota). */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 -z-10 bg-cover bg-center"
+        style={{ backgroundImage: 'url(/library-bg.jpg)' }}
+      />
+      <div aria-hidden="true" className="fixed inset-0 -z-10 bg-cream/85" />
+
       {/* Intestazione: bordeaux, con linea dorata in basso */}
       <header className="bg-crimson text-cream border-b-2 border-gold">
         <div className="mx-auto max-w-5xl px-4 py-3 flex items-center gap-3">

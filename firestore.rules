@@ -58,24 +58,28 @@ service cloud.firestore {
     }
 
     match /schools/{schoolId} {
-      // Lettura: solo un admin della scuola. La query "adminIds array-contains uid"
-      // restituisce esattamente le scuole dove l'utente è admin, quindi passa la regola.
-      allow read: if isSchoolAdmin(schoolId);
+      // Lettura via resource.data (NON get sul doc stesso): così la query
+      // "adminIds array-contains uid" è filtrabile e le regole la consentono.
+      // get() sul documento che si sta elencando non è ammesso nelle query.
+      allow read: if signedIn() && request.auth.uid in resource.data.adminIds;
       // Creazione (bootstrap): un admin può creare una scuola solo includendosi in adminIds
       allow create: if isAdmin() && request.auth.uid in request.resource.data.adminIds;
-      // Modifica/eliminazione: solo un admin della scuola stessa
-      allow update, delete: if isSchoolAdmin(schoolId);
+      // Modifica/eliminazione: uid negli adminIds del documento (resource è la scuola)
+      allow update, delete: if signedIn() && request.auth.uid in resource.data.adminIds;
 
       match /classes/{classId} {
-        // Classe visibile all'admin della scuola e all'operatore assegnato
-        allow read: if isSchoolAdmin(schoolId) || isClassOperator(schoolId, classId);
+        // Admin (get sul doc PADRE, path fisso → ammesso) oppure operatore assegnato
+        // (resource.data.operatorIds → filtrabile con array-contains). Entrambi ok nelle query.
+        allow read: if isSchoolAdmin(schoolId)
+          || (signedIn() && request.auth.uid in resource.data.operatorIds);
         allow create, update, delete: if isSchoolAdmin(schoolId);
 
         match /children/{childId} {
-          // Bambino visibile a: admin della scuola, operatore della classe, suo genitore (via email)
+          // Admin/operatore: get su antenati a path fisso (scuola/classe) → ammesso nelle query.
+          // Genitore: email in resource.data.parentEmails → filtrabile.
           allow read: if isSchoolAdmin(schoolId)
             || isClassOperator(schoolId, classId)
-            || isChildParent(schoolId, classId, childId);
+            || (signedIn() && request.auth.token.email in resource.data.parentEmails);
           allow create, update, delete: if isSchoolAdmin(schoolId);
 
           match /attendance/{date} {
