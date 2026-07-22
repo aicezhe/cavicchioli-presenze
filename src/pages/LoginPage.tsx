@@ -125,13 +125,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-4 text-center text-sm text-warmgray">
-          Non hai un account?{' '}
-          <Link to={`/register/${role}`} className="text-crimson font-medium hover:underline">
-            Registrati
-          </Link>
-        </div>
-        <div className="mt-2 text-center">
+        <div className="mt-4 text-center">
           <Link to="/" className="text-sm text-warmgray hover:text-crimson transition-colors">
             &larr; Cambia ruolo
           </Link>

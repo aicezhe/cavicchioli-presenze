@@ -42,18 +42,9 @@ service cloud.firestore {
       // Ognuno vede il proprio profilo, l'admin vede tutti (serve per assegnare gli operatori)
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
 
-      // Auto-registrazione: l'utente crea SOLO il proprio profilo e SOLO con un ruolo
-      // non privilegiato (operatore/genitore). Il ruolo admin resta creabile solo dall'admin.
-      allow create: if isAdmin()
-        || (
-          request.auth.uid == uid
-          && request.resource.data.role in ['operatore', 'genitore']
-          && request.resource.data.email == request.auth.token.email
-          && request.resource.data.keys().hasOnly(['role', 'name', 'email'])
-        );
-
-      // Modifica del profilo/ruolo: solo l'admin (nessuno può auto-promuoversi)
-      allow update: if isAdmin();
+      // Nessuna auto-registrazione: gli account sono creati dalla scuola (il direttore
+      // consegna le credenziali). Profili e ruoli li gestisce solo l'admin.
+      allow create, update: if isAdmin();
       allow delete: if false;
     }
 

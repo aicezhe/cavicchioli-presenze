@@ -44,7 +44,7 @@ export default function AdminDashboard() {
     }
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader right={headerRight} />
+        <AppHeader tools right={headerRight} />
         <main className="flex-1 flex items-center justify-center px-4">
           <form onSubmit={handleCreateSchool} className="w-full max-w-sm bg-white rounded-xl border border-gold/40 p-6 sm:p-8">
             <h1 className="font-serif text-xl font-semibold text-crimson">Crea la tua scuola</h1>
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader right={headerRight} />
+      <AppHeader tools right={headerRight} />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-4 py-8 space-y-8">
         <div>
