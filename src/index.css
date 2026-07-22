@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* Design token della scuola — disponibili come classi Tailwind:
+   bg-crimson, text-ink, bg-cream, border-gold, text-warmgray,
+   font-serif (Lora) / font-sans (Inter) */
+@theme {
+  --color-crimson: #8B1E3F;
+  --color-ink: #1A1817;
+  --color-cream: #F8F6F2;
+  --color-gold: #C9A24B;
+  --color-warmgray: #8A8580;
+
+  --font-serif: "Lora", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+body {
+  @apply bg-cream text-ink font-sans antialiased;
+}
