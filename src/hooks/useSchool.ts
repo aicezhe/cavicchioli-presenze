@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   addDoc,
   collection,
+  doc,
   onSnapshot,
   query,
+  updateDoc,
   where,
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -49,5 +51,13 @@ export function useSchool(uid: string | undefined) {
     [uid],
   )
 
-  return { school, loading, createSchool }
+  // Rinomina la scuola (sezione Impostazioni)
+  const updateSchoolName = useCallback(
+    async (schoolId: string, name: string) => {
+      await updateDoc(doc(db, 'schools', schoolId), { name: name.trim() })
+    },
+    [],
+  )
+
+  return { school, loading, createSchool, updateSchoolName }
 }
