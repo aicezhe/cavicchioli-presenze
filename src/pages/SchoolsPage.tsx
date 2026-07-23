@@ -34,7 +34,7 @@ export default function SchoolsPage() {
         ) : schools.length === 0 ? (
           <p className="mt-10 text-center text-sm text-warmgray">Nessuna scuola disponibile.</p>
         ) : (
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="mt-10 flex flex-col gap-4 max-w-2xl mx-auto">
             {schools.map((school) => {
               const color = schoolColor(school)
               return (
