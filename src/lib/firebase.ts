@@ -3,8 +3,10 @@ import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 // Le chiavi sono identificatori client pubblici (non segreti),
-// ma le teniamo in .env così il codice non è legato a un progetto Firebase specifico
-const firebaseConfig = {
+// ma le teniamo in .env così il codice non è legato a un progetto Firebase specifico.
+// Esportata: serve a creare un'app secondaria per il provisioning degli account
+// (l'admin crea operatori senza perdere la propria sessione).
+export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,

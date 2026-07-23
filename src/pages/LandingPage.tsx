@@ -36,9 +36,9 @@ export default function LandingPage() {
             <MotionLink
               key={role}
               to={`/login/${role}`}
-              whileHover={{ scale: 1.04 }}
+              whileHover={{ scale: 1.07 }}
               whileTap={{ scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 20 }}
               className="group flex flex-1 items-center justify-between gap-4
                          rounded-[32px] border-2 border-gold bg-white
                          px-7 py-5 text-left
@@ -48,11 +48,11 @@ export default function LandingPage() {
               <span className="font-medium text-lg text-ink transition-colors group-hover:text-cream">
                 {ROLE_LABELS[role]}
               </span>
-              {/* Круглая стрелка справа; при наведении инвертируется в кремовую */}
+              {/* Cerchio con freccia: riempimento oro translucido; all'hover diventa crema */}
               <span
                 className="grid shrink-0 place-items-center w-9 h-9 rounded-full
-                           border-2 border-gold text-crimson transition-colors
-                           group-hover:border-cream group-hover:text-cream"
+                           border-2 border-gold bg-gold/20 text-crimson transition-colors
+                           group-hover:border-cream group-hover:bg-cream/20 group-hover:text-cream"
                 aria-hidden="true"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">

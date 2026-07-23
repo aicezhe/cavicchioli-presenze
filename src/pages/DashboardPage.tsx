@@ -10,8 +10,9 @@ import { ROLE_LABELS } from '../types'
 export default function DashboardPage() {
   const { user, profile } = useAuth()
 
-  // L'admin ha una pagina dedicata
+  // Ruoli con pagina dedicata
   if (profile?.role === 'admin') return <Navigate to="/admin" replace />
+  if (profile?.role === 'operatore') return <Navigate to="/operatore" replace />
 
   return (
     <div className="min-h-screen flex flex-col">

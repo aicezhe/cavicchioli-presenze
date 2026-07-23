@@ -13,13 +13,13 @@ import OperatoriSection from '../../components/admin/OperatoriSection'
 import GenitoriSection from '../../components/admin/GenitoriSection'
 import ImpostazioniSection from '../../components/admin/ImpostazioniSection'
 
+// Impostazioni non è una scheda: si apre dal menu hamburger
 const TABS = [
   { key: 'classi', label: 'Classi' },
   { key: 'operatori', label: 'Operatori' },
   { key: 'genitori', label: 'Genitori' },
-  { key: 'impostazioni', label: 'Impostazioni' },
 ] as const
-type TabKey = (typeof TABS)[number]['key']
+type TabKey = (typeof TABS)[number]['key'] | 'impostazioni'
 
 export default function AdminDashboard() {
   const { user, profile } = useAuth()
@@ -33,12 +33,25 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState<TabKey>('classi')
   const [newSchoolName, setNewSchoolName] = useState('')
 
-  const headerRight = (
+  // Contenuto del menu hamburger: profilo + impostazioni + logout
+  const headerMenu = (close: () => void) => (
     <>
-      <span className="hidden sm:block text-sm text-cream/90">{profile?.name}</span>
+      <div className="px-4 py-2 border-b border-gold/20">
+        <p className="text-sm font-medium">{profile?.name}</p>
+        <p className="text-xs text-warmgray truncate">{profile?.email}</p>
+      </div>
+      <button
+        onClick={() => {
+          setTab('impostazioni')
+          close()
+        }}
+        className="w-full text-left px-4 py-2 text-sm hover:bg-cream transition-colors"
+      >
+        Impostazioni
+      </button>
       <button
         onClick={() => signOut(auth)}
-        className="rounded-lg border border-gold/60 px-3 py-1.5 text-sm hover:bg-gold/10 transition-colors"
+        className="w-full text-left px-4 py-2 text-sm text-crimson hover:bg-cream transition-colors"
       >
         Esci
       </button>
@@ -53,7 +66,7 @@ export default function AdminDashboard() {
     }
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader tools right={headerRight} />
+        <AppHeader tools menu={headerMenu} />
         <main className="flex-1 flex items-center justify-center px-4">
           <form onSubmit={handleCreateSchool} className="w-full max-w-sm bg-white rounded-xl border border-gold/40 p-6 sm:p-8">
             <h1 className="font-serif text-xl font-semibold text-crimson">Crea la tua scuola</h1>
@@ -82,7 +95,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader tools right={headerRight} />
+      <AppHeader tools menu={headerMenu} />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-4 py-8 space-y-8">
         <div>

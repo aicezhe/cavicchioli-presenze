@@ -3,6 +3,7 @@ import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import OperatoreDashboard from './pages/operatore/OperatoreDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -19,6 +20,11 @@ function App() {
       {/* Solo ruolo admin */}
       <Route element={<ProtectedRoute roles={['admin']} />}>
         <Route path="/admin" element={<AdminDashboard />} />
+      </Route>
+
+      {/* Solo ruolo operatore */}
+      <Route element={<ProtectedRoute roles={['operatore']} />}>
+        <Route path="/operatore" element={<OperatoreDashboard />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

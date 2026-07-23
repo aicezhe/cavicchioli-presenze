@@ -1,13 +1,16 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 import Crest from './Crest'
 
 type AppHeaderProps = {
   /** landing: scudo + nome centrati, senza strumenti */
   centered?: boolean
-  /** cabinet: mostra ricerca + menu hamburger (segnaposto) accanto al contenuto a destra */
+  /** cabinet: mostra ricerca + menu hamburger accanto al contenuto a destra */
   tools?: boolean
-  /** cabinet: contenuto a destra (es. nome utente + logout) */
+  /** cabinet: contenuto extra a destra (opzionale) */
   right?: ReactNode
+  /** cabinet: contenuto del menu hamburger (riceve una funzione per chiuderlo) */
+  menu?: (close: () => void) => ReactNode
 }
 
 function SearchIcon() {
@@ -30,8 +33,11 @@ function MenuIcon() {
 }
 
 /** Intestazione condivisa: scudo + nome scuola su fondo bordeaux con linea dorata.
-    centered → landing (tutto al centro); altrimenti → cabina personale con strumenti a destra. */
-export default function AppHeader({ centered, tools, right }: AppHeaderProps) {
+    centered → landing; altrimenti cabina con ricerca e menu hamburger (impostazioni, logout). */
+export default function AppHeader({ centered, tools, right, menu }: AppHeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const closeMenu = () => setMenuOpen(false)
+
   return (
     <header className="bg-crimson text-cream border-b-2 border-gold">
       <div
@@ -52,9 +58,26 @@ export default function AppHeader({ centered, tools, right }: AppHeaderProps) {
             )}
             {right}
             {tools && (
-              <button aria-label="Menu" className="opacity-80 hover:opacity-100 transition-opacity">
-                <MenuIcon />
-              </button>
+              <div className="relative">
+                <button
+                  aria-label="Menu"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className="opacity-80 hover:opacity-100 transition-opacity"
+                >
+                  <MenuIcon />
+                </button>
+
+                {menuOpen && menu && (
+                  <>
+                    {/* Overlay per chiudere cliccando fuori */}
+                    <div className="fixed inset-0 z-40" onClick={closeMenu} />
+                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-gold/40 bg-white text-ink shadow-lg z-50 py-1.5">
+                      {menu(closeMenu)}
+                    </div>
+                  </>
+                )}
+              </div>
             )}
           </div>
         )}
