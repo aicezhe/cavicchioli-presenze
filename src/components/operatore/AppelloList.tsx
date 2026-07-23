@@ -8,6 +8,8 @@ type AppelloListProps = {
   classId: string
   operatoreUid: string
   session: Session
+  /** Colore della scuola. Default: dusty-blue */
+  color?: string
 }
 
 // Data di oggi in italiano esteso, es. "mercoledì 22 luglio 2026"
@@ -21,7 +23,7 @@ function todayLabel(): string {
 }
 
 /** Appello del giorno: intestazione con data, progresso, elenco bambini con interruttore. */
-export default function AppelloList({ schoolId, classId, operatoreUid, session }: AppelloListProps) {
+export default function AppelloList({ schoolId, classId, operatoreUid, session, color = '#6E859C' }: AppelloListProps) {
   const { children, present, setPresent, presentCount } = useAppello(schoolId, classId, session)
 
   return (
@@ -34,7 +36,7 @@ export default function AppelloList({ schoolId, classId, operatoreUid, session }
           <p className="font-serif text-lg font-semibold capitalize">{todayLabel()}</p>
         </div>
         {/* Progresso: quanti segnati presenti (aiuta a non dimenticare nessuno) */}
-        <p className="text-sm font-medium text-dustyblue">
+        <p className="text-sm font-medium" style={{ color }}>
           {presentCount} / {children.length} presenti
         </p>
       </div>
@@ -49,6 +51,7 @@ export default function AppelloList({ schoolId, classId, operatoreUid, session }
               child={child}
               present={present[child.id] ?? false}
               onToggle={(value) => setPresent(child.id, value, operatoreUid)}
+              color={color}
             />
           ))}
         </div>

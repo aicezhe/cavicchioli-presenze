@@ -17,6 +17,8 @@ type AppHeaderProps = {
   emblem?: ReactNode
   /** Nome del brand a sinistra. Default: "Cavicchioli" */
   title?: string
+  /** Colore di sfondo dell'header (colore della scuola). Default: dusty-blue */
+  bgColor?: string
 }
 
 function SearchIcon() {
@@ -40,12 +42,15 @@ function MenuIcon() {
 
 /** Intestazione condivisa: scudo + nome scuola su fondo bordeaux con linea dorata.
     centered → landing; altrimenti cabina con ricerca e menu hamburger (impostazioni, logout). */
-export default function AppHeader({ centered, tools, onSearchClick, right, menu, emblem, title }: AppHeaderProps) {
+export default function AppHeader({ centered, tools, onSearchClick, right, menu, emblem, title, bgColor }: AppHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <header className="bg-dustyblue text-cream border-b border-black/10">
+    <header
+      className={'text-cream border-b border-black/10 ' + (bgColor ? '' : 'bg-dustyblue')}
+      style={bgColor ? { backgroundColor: bgColor } : undefined}
+    >
       <div
         className={
           'mx-auto max-w-5xl px-4 py-3 flex items-center gap-3 ' +

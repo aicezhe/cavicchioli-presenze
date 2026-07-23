@@ -3,10 +3,13 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../context/AuthContext'
 import { useOperatoreClasses } from '../../hooks/useOperatoreClasses'
+import { useSchoolById } from '../../hooks/useSchools'
 import AppHeader from '../../components/AppHeader'
+import Crest from '../../components/Crest'
 import SessionSwitch from '../../components/SessionSwitch'
 import ClassSwitcher from '../../components/operatore/ClassSwitcher'
 import AppelloList from '../../components/operatore/AppelloList'
+import { schoolColor, schoolInitials } from '../../types'
 import type { Session } from '../../types'
 
 export default function OperatoreDashboard() {
@@ -45,9 +48,17 @@ export default function OperatoreDashboard() {
 
   const active = classes.find((c) => c.id === activeId)
 
+  // La scuola dell'operatore si ricava dai suoi dati (schoolId nel percorso della classe):
+  // header e accenti prendono nome e colore di QUELLA scuola.
+  const { school } = useSchoolById(active?.schoolId ?? classes[0]?.schoolId)
+  const color = school ? schoolColor(school) : '#6E859C'
+  const headerEmblem = school ? (
+    <Crest size={40} variant="compact" color={color} initials={schoolInitials(school)} />
+  ) : undefined
+
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader tools menu={headerMenu} />
+      <AppHeader tools menu={headerMenu} emblem={headerEmblem} title={school?.name} bgColor={school ? color : undefined} />
 
       <main className="flex-1 mx-auto max-w-2xl w-full px-4 py-8 space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -56,7 +67,7 @@ export default function OperatoreDashboard() {
             <p className="text-sm text-warmgray">Registro presenze pre/post-scuola</p>
           </div>
           {/* Sessione: mattina (pre-scuola) o pomeriggio (post-scuola) */}
-          {classes.length > 0 && <SessionSwitch value={session} onChange={setSession} />}
+          {classes.length > 0 && <SessionSwitch value={session} onChange={setSession} color={color} />}
         </div>
 
         {loading ? (
@@ -72,7 +83,7 @@ export default function OperatoreDashboard() {
           <>
             {/* Selettore solo se le classi sono più di una */}
             {classes.length > 1 && activeId && (
-              <ClassSwitcher classes={classes} activeId={activeId} onSelect={setActiveId} />
+              <ClassSwitcher classes={classes} activeId={activeId} onSelect={setActiveId} color={color} />
             )}
             {active && user && (
               <AppelloList
@@ -80,6 +91,7 @@ export default function OperatoreDashboard() {
                 classId={active.id}
                 operatoreUid={user.uid}
                 session={session}
+                color={color}
               />
             )}
           </>

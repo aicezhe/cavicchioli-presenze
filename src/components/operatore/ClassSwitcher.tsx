@@ -4,27 +4,31 @@ type ClassSwitcherProps = {
   classes: OperatoreClass[]
   activeId: string
   onSelect: (classId: string) => void
+  /** Colore della scuola per la tab attiva. Default: dusty-blue */
+  color?: string
 }
 
 /** Selettore di classe (solo quando l'operatore ne ha più di una): tab scorrevoli. */
-export default function ClassSwitcher({ classes, activeId, onSelect }: ClassSwitcherProps) {
+export default function ClassSwitcher({ classes, activeId, onSelect, color = '#6E859C' }: ClassSwitcherProps) {
   return (
-    <div className="border-b border-dustyblue/30 overflow-x-auto">
+    <div className="border-b border-black/10 overflow-x-auto">
       <nav className="flex gap-1 min-w-max">
-        {classes.map((cls) => (
-          <button
-            key={cls.id}
-            onClick={() => onSelect(cls.id)}
-            className={
-              'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ' +
-              (activeId === cls.id
-                ? 'border-dustyblue text-dustyblue'
-                : 'border-transparent text-warmgray hover:text-ink')
-            }
-          >
-            {cls.name}
-          </button>
-        ))}
+        {classes.map((cls) => {
+          const active = activeId === cls.id
+          return (
+            <button
+              key={cls.id}
+              onClick={() => onSelect(cls.id)}
+              style={active ? { borderBottomColor: color, color } : undefined}
+              className={
+                'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ' +
+                (active ? '' : 'border-transparent text-warmgray hover:text-ink')
+              }
+            >
+              {cls.name}
+            </button>
+          )
+        })}
       </nav>
     </div>
   )

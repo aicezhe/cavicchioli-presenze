@@ -5,6 +5,8 @@ type AttendanceCalendarProps = {
   /** presenze per data (YYYY-MM-DD) */
   records: Record<string, AttendanceRecord>
   session: Session
+  /** Colore della scuola (giorni presenti, oggi, legenda). Default: dusty-blue */
+  color?: string
 }
 
 const WEEKDAYS = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom']
@@ -18,7 +20,7 @@ const iso = (y: number, m: number, d: number) =>
  * Giorno bordeaux = bambino presente; bianco = assente (o nessuna registrazione).
  * Toccando il titolo (mese/anno) si apre la scelta rapida di mese e anno.
  */
-export default function AttendanceCalendar({ records, session }: AttendanceCalendarProps) {
+export default function AttendanceCalendar({ records, session, color = '#6E859C' }: AttendanceCalendarProps) {
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth()) // 0-11
@@ -54,7 +56,7 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
   const todayIso = iso(now.getFullYear(), now.getMonth(), now.getDate())
 
   return (
-    <div className="bg-white rounded-xl border border-dustyblue/40 p-4 sm:p-5">
+    <div className="bg-white rounded-xl border border-black/10 p-4 sm:p-5">
       {/* Intestazione: frecce mese + titolo che apre la scelta mese/anno */}
       <div className="flex items-center justify-between mb-4">
         <button
@@ -125,12 +127,16 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
                     setMonth(i)
                     setPickerOpen(false)
                   }}
+                  style={
+                    selected
+                      ? { backgroundColor: color, borderColor: color }
+                      : isCurrent
+                        ? { boxShadow: `inset 0 0 0 1px ${color}` }
+                        : undefined
+                  }
                   className={
                     'py-2.5 rounded-lg text-sm font-medium border transition-colors ' +
-                    (selected
-                      ? 'bg-dustyblue text-cream border-dustyblue'
-                      : 'bg-white text-ink border-dustyblue/30 hover:bg-cream') +
-                    (isCurrent && !selected ? ' ring-1 ring-dustyblue' : '')
+                    (selected ? 'text-cream' : 'bg-white text-ink border-black/10 hover:bg-cream')
                   }
                 >
                   {m}
@@ -160,12 +166,13 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
               return (
                 <div
                   key={dateIso}
+                  style={{
+                    ...(present ? { backgroundColor: color, borderColor: color } : {}),
+                    ...(isToday ? { boxShadow: `0 0 0 2px ${color}` } : {}),
+                  }}
                   className={
                     'aspect-square grid place-items-center rounded-lg text-lg sm:text-xl font-medium border transition-colors ' +
-                    (present
-                      ? 'bg-dustyblue text-cream border-dustyblue'
-                      : 'bg-white text-ink border-dustyblue/30') +
-                    (isToday ? ' ring-2 ring-dustyblue' : '')
+                    (present ? 'text-cream' : 'bg-white text-ink border-black/10')
                   }
                   title={present ? 'Presente' : 'Assente'}
                 >
@@ -178,10 +185,10 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
           {/* Legenda */}
           <div className="mt-4 flex items-center gap-4 text-xs text-warmgray">
             <span className="inline-flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded bg-dustyblue inline-block" /> Presente
+              <span className="w-3 h-3 rounded inline-block" style={{ backgroundColor: color }} /> Presente
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded bg-white border border-dustyblue/40 inline-block" /> Assente
+              <span className="w-3 h-3 rounded bg-white border border-black/20 inline-block" /> Assente
             </span>
           </div>
         </>
