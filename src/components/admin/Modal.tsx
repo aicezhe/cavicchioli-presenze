@@ -29,12 +29,12 @@ export default function Modal({ open, title, onClose, children }: ModalProps) {
             transition={{ type: 'spring', stiffness: 300, damping: 28 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-gold/40 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-dustyblue/40 px-5 py-4">
               <h2 className="font-serif text-lg font-semibold">{title}</h2>
               <button
                 onClick={onClose}
                 aria-label="Chiudi"
-                className="text-warmgray hover:text-crimson transition-colors text-xl leading-none"
+                className="text-warmgray hover:text-dustyblue transition-colors text-xl leading-none"
               >
                 &times;
               </button>

@@ -27,7 +27,7 @@ export default function OperatoreDashboard() {
   // Contenuto del menu hamburger: profilo + logout
   const headerMenu = (close: () => void) => (
     <>
-      <div className="px-4 py-2 border-b border-gold/20">
+      <div className="px-4 py-2 border-b border-dustyblue/20">
         <p className="text-sm font-medium">{profile?.name}</p>
         <p className="text-xs text-warmgray truncate">{profile?.email}</p>
       </div>
@@ -36,7 +36,7 @@ export default function OperatoreDashboard() {
           close()
           signOut(auth)
         }}
-        className="w-full text-left px-4 py-2 text-sm text-crimson hover:bg-cream transition-colors"
+        className="w-full text-left px-4 py-2 text-sm text-dustyblue hover:bg-cream transition-colors"
       >
         Esci
       </button>
@@ -62,7 +62,7 @@ export default function OperatoreDashboard() {
         {loading ? (
           <p className="text-sm text-warmgray animate-pulse">Caricamento…</p>
         ) : classes.length === 0 ? (
-          <div className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3">
+          <div className="rounded-xl border border-dustyblue/50 bg-dustyblue/10 px-4 py-3">
             <p className="font-medium">Nessuna classe assegnata</p>
             <p className="mt-1 text-sm text-warmgray">
               Non sei ancora assegnato a nessuna classe. Contatta l&apos;amministrazione della scuola.

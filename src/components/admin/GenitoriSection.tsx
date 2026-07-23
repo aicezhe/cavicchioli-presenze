@@ -37,7 +37,7 @@ export default function GenitoriSection({ children, setParentLink }: GenitoriSec
         <h2 className="font-serif text-xl font-semibold">Genitori</h2>
         <button
           onClick={() => setShowAdd(true)}
-          className="rounded-lg bg-crimson px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity"
+          className="rounded-lg bg-dustyblue px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity"
         >
           + Aggiungi genitore
         </button>
@@ -55,7 +55,7 @@ export default function GenitoriSection({ children, setParentLink }: GenitoriSec
             const available = children.filter((c) => !linkedIds.has(c.id))
 
             return (
-              <div key={parent.id} className="bg-white rounded-xl border border-gold/40 px-5 py-4">
+              <div key={parent.id} className="bg-white rounded-xl border border-dustyblue/40 px-5 py-4">
                 <div className="flex flex-wrap items-baseline gap-x-2">
                   <span className="font-medium">{parent.name}</span>
                   <span className="text-sm text-warmgray">{parent.email}</span>
@@ -71,16 +71,16 @@ export default function GenitoriSection({ children, setParentLink }: GenitoriSec
                     {linked.map((child) => (
                       <li
                         key={child.id}
-                        className="inline-flex items-center gap-2 rounded-full bg-crimson/10 text-crimson px-3 py-1 text-sm"
+                        className="inline-flex items-center gap-2 rounded-full bg-dustyblue/10 text-dustyblue px-3 py-1 text-sm"
                       >
                         {child.firstName} {child.lastName}
-                        <span className="text-crimson/60">· {child.className}</span>
+                        <span className="text-dustyblue/60">· {child.className}</span>
                         <button
                           onClick={() =>
                             setParentLink(child.classId, child.id, parent.email, parent.id, false)
                           }
                           aria-label="Scollega"
-                          className="hover:text-crimson/70"
+                          className="hover:text-dustyblue/70"
                           title="Scollega"
                         >
                           &times;
@@ -101,7 +101,7 @@ export default function GenitoriSection({ children, setParentLink }: GenitoriSec
                         if (child) setParentLink(child.classId, child.id, parent.email, parent.id, true)
                       }}
                       className="w-full sm:w-auto rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2 text-sm
-                                 focus:outline-none focus:ring-2 focus:ring-crimson/60"
+                                 focus:outline-none focus:ring-2 focus:ring-dustyblue/60"
                     >
                       <option value="">+ Collega bambino…</option>
                       {available.map((c) => (

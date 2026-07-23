@@ -32,7 +32,7 @@ export default function GenitoreDashboard() {
   // Menu hamburger: le due sezioni (presenze / contatti) + profilo + logout
   const headerMenu = (close: () => void) => (
     <>
-      <div className="px-4 py-2 border-b border-gold/20">
+      <div className="px-4 py-2 border-b border-dustyblue/20">
         <p className="text-sm font-medium">{profile?.name}</p>
         <p className="text-xs text-warmgray truncate">{profile?.email}</p>
       </div>
@@ -43,7 +43,7 @@ export default function GenitoreDashboard() {
         }}
         className={
           'w-full text-left px-4 py-2 text-sm hover:bg-cream transition-colors ' +
-          (view === 'presenze' ? 'text-crimson font-medium' : '')
+          (view === 'presenze' ? 'text-dustyblue font-medium' : '')
         }
       >
         Controlla presenze
@@ -55,7 +55,7 @@ export default function GenitoreDashboard() {
         }}
         className={
           'w-full text-left px-4 py-2 text-sm hover:bg-cream transition-colors ' +
-          (view === 'contatti' ? 'text-crimson font-medium' : '')
+          (view === 'contatti' ? 'text-dustyblue font-medium' : '')
         }
       >
         Contatta un operatore
@@ -65,7 +65,7 @@ export default function GenitoreDashboard() {
           close()
           signOut(auth)
         }}
-        className="w-full text-left px-4 py-2 text-sm text-crimson hover:bg-cream transition-colors border-t border-gold/20 mt-1 pt-2"
+        className="w-full text-left px-4 py-2 text-sm text-dustyblue hover:bg-cream transition-colors border-t border-dustyblue/20 mt-1 pt-2"
       >
         Esci
       </button>
@@ -95,7 +95,7 @@ export default function GenitoreDashboard() {
             {loading ? (
               <p className="text-sm text-warmgray animate-pulse">Caricamento…</p>
             ) : children.length === 0 ? (
-              <div className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3">
+              <div className="rounded-xl border border-dustyblue/50 bg-dustyblue/10 px-4 py-3">
                 <p className="font-medium">Nessun bambino collegato</p>
                 <p className="mt-1 text-sm text-warmgray">
                   Il tuo account non è ancora collegato a nessun bambino. Contatta

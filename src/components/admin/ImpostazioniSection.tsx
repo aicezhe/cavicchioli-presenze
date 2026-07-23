@@ -57,35 +57,35 @@ export default function ImpostazioniSection({
       <h2 className="font-serif text-xl font-semibold">Impostazioni</h2>
 
       {/* Nome della scuola */}
-      <form onSubmit={handleSave} className="bg-white rounded-xl border border-gold/40 p-5">
+      <form onSubmit={handleSave} className="bg-white rounded-xl border border-dustyblue/40 p-5">
         <label className="block">
           <span className="text-sm font-medium">Nome della scuola</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="mt-1 w-full rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2.5
-                       focus:outline-none focus:ring-2 focus:ring-crimson/60 focus:border-crimson"
+                       focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
           />
         </label>
         <div className="mt-3 flex items-center gap-3">
           <button
             type="submit"
             disabled={!name.trim() || name.trim() === school.name}
-            className="rounded-lg bg-crimson px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
+            className="rounded-lg bg-dustyblue px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
           >
             Salva
           </button>
-          {saved && <span className="text-sm text-crimson">Salvato ✓</span>}
+          {saved && <span className="text-sm text-dustyblue">Salvato ✓</span>}
         </div>
       </form>
 
       {/* Amministratori */}
-      <div className="bg-white rounded-xl border border-gold/40 p-5">
+      <div className="bg-white rounded-xl border border-dustyblue/40 p-5">
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium">Amministratori della scuola</p>
           <button
             onClick={() => setShowAddAdmin(true)}
-            className="text-sm text-crimson font-medium hover:underline"
+            className="text-sm text-dustyblue font-medium hover:underline"
           >
             + Aggiungi
           </button>

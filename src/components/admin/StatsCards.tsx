@@ -21,7 +21,7 @@ export default function StatsCards({ stats }: { stats: AdminStats }) {
       {buildItems(stats).map((item) => (
         <div
           key={item.label}
-          className="bg-white rounded-xl border border-gold/40 px-5 py-4"
+          className="bg-white rounded-xl border border-dustyblue/40 px-5 py-4"
         >
           <p className="font-serif text-3xl font-semibold text-ink">{item.value}</p>
           <p className="mt-1 text-sm text-warmgray">{item.label}</p>

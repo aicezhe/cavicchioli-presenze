@@ -54,7 +54,7 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
   const todayIso = iso(now.getFullYear(), now.getMonth(), now.getDate())
 
   return (
-    <div className="bg-white rounded-xl border border-gold/40 p-4 sm:p-5">
+    <div className="bg-white rounded-xl border border-dustyblue/40 p-4 sm:p-5">
       {/* Intestazione: frecce mese + titolo che apre la scelta mese/anno */}
       <div className="flex items-center justify-between mb-4">
         <button
@@ -69,7 +69,7 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
         <button
           onClick={() => setPickerOpen((v) => !v)}
           aria-expanded={pickerOpen}
-          className="inline-flex items-center gap-1 font-serif text-lg font-semibold capitalize hover:text-crimson transition-colors"
+          className="inline-flex items-center gap-1 font-serif text-lg font-semibold capitalize hover:text-dustyblue transition-colors"
         >
           {monthLabel}
           <svg
@@ -128,9 +128,9 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
                   className={
                     'py-2.5 rounded-lg text-sm font-medium border transition-colors ' +
                     (selected
-                      ? 'bg-crimson text-cream border-crimson'
-                      : 'bg-white text-ink border-gold/30 hover:bg-cream') +
-                    (isCurrent && !selected ? ' ring-1 ring-gold' : '')
+                      ? 'bg-dustyblue text-cream border-dustyblue'
+                      : 'bg-white text-ink border-dustyblue/30 hover:bg-cream') +
+                    (isCurrent && !selected ? ' ring-1 ring-dustyblue' : '')
                   }
                 >
                   {m}
@@ -163,9 +163,9 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
                   className={
                     'aspect-square grid place-items-center rounded-lg text-lg sm:text-xl font-medium border transition-colors ' +
                     (present
-                      ? 'bg-crimson text-cream border-crimson'
-                      : 'bg-white text-ink border-gold/30') +
-                    (isToday ? ' ring-2 ring-gold' : '')
+                      ? 'bg-dustyblue text-cream border-dustyblue'
+                      : 'bg-white text-ink border-dustyblue/30') +
+                    (isToday ? ' ring-2 ring-dustyblue' : '')
                   }
                   title={present ? 'Presente' : 'Assente'}
                 >
@@ -178,10 +178,10 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
           {/* Legenda */}
           <div className="mt-4 flex items-center gap-4 text-xs text-warmgray">
             <span className="inline-flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded bg-crimson inline-block" /> Presente
+              <span className="w-3 h-3 rounded bg-dustyblue inline-block" /> Presente
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded bg-white border border-gold/40 inline-block" /> Assente
+              <span className="w-3 h-3 rounded bg-white border border-dustyblue/40 inline-block" /> Assente
             </span>
           </div>
         </>

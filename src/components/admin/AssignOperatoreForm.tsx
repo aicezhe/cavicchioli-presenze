@@ -36,8 +36,8 @@ export default function AssignOperatoreForm({ assignedIds, onToggle }: AssignOpe
               className={
                 'shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ' +
                 (assigned
-                  ? 'bg-crimson text-cream hover:opacity-90'
-                  : 'border border-gold text-crimson hover:bg-gold/10')
+                  ? 'bg-dustyblue text-cream hover:opacity-90'
+                  : 'border border-dustyblue text-dustyblue hover:bg-dustyblue/10')
               }
             >
               {assigned ? 'Rimuovi' : 'Assegna'}

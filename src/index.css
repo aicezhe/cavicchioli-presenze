@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-/* Design token della scuola — disponibili come classi Tailwind:
-   bg-crimson, text-ink, bg-cream, border-gold, text-warmgray,
-   font-serif (Lora) / font-sans (Inter) */
+/* Palette piattaforma NOTA — disponibili come classi Tailwind:
+   bg-dustyblue (accento/CTA), text-ink, bg-cream, text-warmgray,
+   font-serif (Lora) / font-sans (Inter). L'oro è stato rimosso:
+   bordi e divisori usano dustyblue o ink secondo il contesto. */
 @theme {
-  --color-crimson: #8B1E3F;
+  --color-dustyblue: #6E859C;
   --color-ink: #1A1817;
   --color-cream: #F8F6F2;
-  --color-gold: #C9A24B;
   --color-warmgray: #8A8580;
 
   --font-serif: "Lora", Georgia, serif;

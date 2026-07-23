@@ -48,7 +48,7 @@ export default function ClassAccordion({
     .map((op) => op.name)
 
   return (
-    <div className="bg-white rounded-xl border border-gold/40 overflow-hidden">
+    <div className="bg-white rounded-xl border border-dustyblue/40 overflow-hidden">
       {/* Testata cliccabile dell'accordion */}
       <button
         onClick={() => setOpen((v) => !v)}
@@ -76,14 +76,14 @@ export default function ClassAccordion({
             transition={{ duration: 0.22 }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 border-t border-gold/30 pt-4 space-y-5">
+            <div className="px-5 pb-5 border-t border-dustyblue/30 pt-4 space-y-5">
               {/* Bambini */}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-sm font-semibold uppercase tracking-wide text-warmgray">Bambini</h4>
                   <button
                     onClick={() => setShowAddChild(true)}
-                    className="text-sm text-crimson font-medium hover:underline"
+                    className="text-sm text-dustyblue font-medium hover:underline"
                   >
                     + Aggiungi bambino
                   </button>
@@ -91,7 +91,7 @@ export default function ClassAccordion({
                 {children.length === 0 ? (
                   <p className="text-sm text-warmgray">Nessun bambino in questa classe.</p>
                 ) : (
-                  <ul className="divide-y divide-gold/20">
+                  <ul className="divide-y divide-dustyblue/20">
                     {children.map((child) => (
                       <li key={child.id} className="flex items-center justify-between py-2 text-sm">
                         <span>
@@ -107,7 +107,7 @@ export default function ClassAccordion({
                               onDataChange()
                             }
                           }}
-                          className="text-warmgray hover:text-crimson transition-colors text-xs"
+                          className="text-warmgray hover:text-dustyblue transition-colors text-xs"
                         >
                           Rimuovi
                         </button>
@@ -123,7 +123,7 @@ export default function ClassAccordion({
                   <h4 className="text-sm font-semibold uppercase tracking-wide text-warmgray">Operatori</h4>
                   <button
                     onClick={() => setShowAssign(true)}
-                    className="text-sm text-crimson font-medium hover:underline"
+                    className="text-sm text-dustyblue font-medium hover:underline"
                   >
                     Gestisci
                   </button>
@@ -141,7 +141,7 @@ export default function ClassAccordion({
                   onClick={() => {
                     if (confirm(`Eliminare la classe "${cls.name}"?`)) onRemoveClass(cls.id)
                   }}
-                  className="text-xs text-crimson hover:underline"
+                  className="text-xs text-dustyblue hover:underline"
                 >
                   Elimina classe
                 </button>

@@ -16,7 +16,7 @@ export default function ChildAttendanceRow({ child, present, onToggle }: ChildAt
       aria-checked={present}
       aria-label={`Presente: ${child.firstName} ${child.lastName}`}
       onClick={() => onToggle(!present)}
-      className="w-full flex items-center justify-between gap-4 bg-white rounded-xl border border-gold/40 px-4 py-3 text-left hover:bg-cream/40 transition-colors"
+      className="w-full flex items-center justify-between gap-4 bg-white rounded-xl border border-dustyblue/40 px-4 py-3 text-left hover:bg-cream/40 transition-colors"
     >
       <span className="min-w-0 font-medium truncate">
         {child.lastName} <span className="text-warmgray">{child.firstName}</span>
@@ -26,7 +26,7 @@ export default function ChildAttendanceRow({ child, present, onToggle }: ChildAt
       <span
         className={
           'grid place-items-center w-7 h-7 shrink-0 rounded-md border-2 transition-colors ' +
-          (present ? 'bg-crimson border-crimson text-cream' : 'bg-white border-gold text-transparent')
+          (present ? 'bg-dustyblue border-dustyblue text-cream' : 'bg-white border-dustyblue text-transparent')
         }
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">

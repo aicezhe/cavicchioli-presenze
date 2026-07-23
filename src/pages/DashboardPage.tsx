@@ -28,8 +28,8 @@ export default function DashboardPage() {
           </div>
           <button
             onClick={() => signOut(auth)}
-            className="ml-auto shrink-0 rounded-lg border border-gold/60 px-3 py-1.5 text-sm
-                       hover:bg-gold/10 transition-colors"
+            className="ml-auto shrink-0 rounded-lg border border-dustyblue/60 px-3 py-1.5 text-sm
+                       hover:bg-dustyblue/10 transition-colors"
           >
             Esci
           </button>
@@ -44,7 +44,7 @@ export default function DashboardPage() {
             </h1>
             <p className="mt-2 text-warmgray">
               <span
-                className="inline-block rounded-full bg-crimson/10 text-crimson
+                className="inline-block rounded-full bg-dustyblue/10 text-dustyblue
                            px-3 py-0.5 text-sm font-medium mr-2"
               >
                 {ROLE_LABELS[profile.role]}
@@ -53,7 +53,7 @@ export default function DashboardPage() {
             </p>
           </>
         ) : (
-          <div className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 max-w-xl">
+          <div className="rounded-xl border border-dustyblue/50 bg-dustyblue/10 px-4 py-3 max-w-xl">
             <p className="font-medium">Profilo non configurato</p>
             <p className="mt-1 text-sm text-warmgray">
               Il tuo account non ha ancora un ruolo assegnato. Contatta

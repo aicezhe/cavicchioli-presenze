@@ -84,7 +84,7 @@ export default function LoginPage() {
       >
         <div className="flex flex-col items-center text-center mb-8">
           <Crest size={110} variant="full" />
-          <h1 className="mt-4 font-serif text-2xl font-semibold text-crimson">
+          <h1 className="mt-4 font-serif text-2xl font-semibold text-dustyblue">
             Cavicchioli Presenze
           </h1>
           <p className="mt-1 text-sm text-warmgray">
@@ -94,7 +94,7 @@ export default function LoginPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl border border-gold/40 shadow-sm p-6 sm:p-8"
+          className="bg-white rounded-xl border border-dustyblue/40 shadow-sm p-6 sm:p-8"
         >
           <label className="block">
             <span className="text-sm font-medium">Email</span>
@@ -105,7 +105,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2.5
-                         focus:outline-none focus:ring-2 focus:ring-crimson/60 focus:border-crimson"
+                         focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
             />
           </label>
 
@@ -118,12 +118,12 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2.5
-                         focus:outline-none focus:ring-2 focus:ring-crimson/60 focus:border-crimson"
+                         focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
             />
           </label>
 
           {error && (
-            <p role="alert" className="mt-4 text-sm text-crimson bg-crimson/5 border border-crimson/20 rounded-lg px-3 py-2">
+            <p role="alert" className="mt-4 text-sm text-dustyblue bg-dustyblue/5 border border-dustyblue/20 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
@@ -131,7 +131,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-6 w-full rounded-lg bg-crimson px-4 py-2.5 text-cream font-medium
+            className="mt-6 w-full rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium
                        hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {submitting ? 'Accesso in corso…' : 'Accedi'}
@@ -139,7 +139,7 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-4 text-center">
-          <Link to="/" className="text-sm text-warmgray hover:text-crimson transition-colors">
+          <Link to="/" className="text-sm text-warmgray hover:text-dustyblue transition-colors">
             &larr; Cambia ruolo
           </Link>
         </div>

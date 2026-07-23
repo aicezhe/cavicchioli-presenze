@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140">
+  <circle cx="70" cy="70" r="66" fill="#1A1817" stroke="#6E859C" stroke-width="2"/>
+  <circle cx="70" cy="70" r="56" fill="none" stroke="#6E859C" stroke-width="0.75"/>
+  <path d="M50 70 L64 84 L92 50" stroke="#6E859C" stroke-width="8"
+        fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="70" y="112" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="9"
+        letter-spacing="3" fill="#F8F6F2">NOTA</text>
+</svg>

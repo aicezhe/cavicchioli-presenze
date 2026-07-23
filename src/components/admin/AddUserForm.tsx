@@ -13,7 +13,7 @@ type AddUserFormProps = {
 
 const inputClass =
   'mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5 ' +
-  'focus:outline-none focus:ring-2 focus:ring-crimson/60 focus:border-crimson'
+  'focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue'
 
 function errorMessage(err: unknown): string {
   if (err instanceof FirebaseError) {
@@ -84,13 +84,13 @@ export default function AddUserForm({ onSubmit, onDone, submitLabel, withPhone }
         </span>
       </label>
 
-      {error && <p className="text-sm text-crimson">{error}</p>}
+      {error && <p className="text-sm text-dustyblue">{error}</p>}
 
       <div className="flex gap-3 pt-2">
         <button
           type="submit"
           disabled={saving}
-          className="flex-1 rounded-lg bg-crimson px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="flex-1 rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {saving ? 'Creazione…' : submitLabel}
         </button>

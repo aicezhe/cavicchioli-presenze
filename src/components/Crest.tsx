@@ -6,8 +6,9 @@ type CrestProps = {
   className?: string
 }
 
-const CRIMSON = '#8B1E3F'
-const GOLD = '#C9A24B'
+// Palette NOTA: scudo dusty-blue, dettagli neri (ex oro) per contrasto, pagine crema
+const CRIMSON = '#6E859C'
+const GOLD = '#1A1817'
 const CREAM = '#F8F6F2'
 
 /**

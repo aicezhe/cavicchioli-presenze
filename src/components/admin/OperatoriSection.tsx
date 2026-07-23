@@ -27,7 +27,7 @@ export default function OperatoriSection({ classes, onToggle }: OperatoriSection
         <h2 className="font-serif text-xl font-semibold">Operatori</h2>
         <button
           onClick={() => setShowAdd(true)}
-          className="rounded-lg bg-crimson px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity"
+          className="rounded-lg bg-dustyblue px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity"
         >
           + Aggiungi operatore
         </button>
@@ -40,7 +40,7 @@ export default function OperatoriSection({ classes, onToggle }: OperatoriSection
       ) : (
         <div className="space-y-3">
           {operators.map((op) => (
-            <div key={op.id} className="bg-white rounded-xl border border-gold/40 px-5 py-4">
+            <div key={op.id} className="bg-white rounded-xl border border-dustyblue/40 px-5 py-4">
               <div className="flex flex-wrap items-baseline gap-x-2">
                 <span className="font-medium">{op.name}</span>
                 <span className="text-sm text-warmgray">{op.email}</span>
@@ -63,8 +63,8 @@ export default function OperatoriSection({ classes, onToggle }: OperatoriSection
                         className={
                           'rounded-full px-3 py-1 text-sm font-medium transition-colors ' +
                           (assigned
-                            ? 'bg-crimson text-cream'
-                            : 'border border-gold text-ink hover:bg-gold/10')
+                            ? 'bg-dustyblue text-cream'
+                            : 'border border-dustyblue text-ink hover:bg-dustyblue/10')
                         }
                       >
                         {cls.name}

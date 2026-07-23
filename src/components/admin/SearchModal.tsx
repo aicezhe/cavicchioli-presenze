@@ -55,7 +55,7 @@ export default function SearchModal({ open, onClose, classes, children, onGoToCl
         onChange={(e) => setQ(e.target.value)}
         placeholder="Nome di una classe o di un bambino…"
         className="w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
-                   focus:outline-none focus:ring-2 focus:ring-crimson/60 focus:border-crimson"
+                   focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
       />
 
       {query && classMatches.length === 0 && childMatches.length === 0 && (

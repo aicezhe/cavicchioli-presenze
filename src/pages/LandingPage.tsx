@@ -30,7 +30,7 @@ export default function LandingPage() {
         <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-ink text-center">
           Scegli il tuo ruolo
         </h1>
-        <div className="mt-4 h-px w-24 bg-crimson" aria-hidden="true" />
+        <div className="mt-4 h-px w-24 bg-dustyblue" aria-hidden="true" />
 
         <div className="mt-10 sm:mt-14 flex flex-col sm:flex-row gap-5 sm:gap-6 w-full max-w-3xl items-stretch justify-center">
           {ROLES.map((role) => (
@@ -41,9 +41,9 @@ export default function LandingPage() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 320, damping: 20 }}
               className="group flex flex-1 items-center justify-between gap-4
-                         rounded-[32px] border-2 border-gold bg-white
+                         rounded-[32px] border-2 border-dustyblue bg-white
                          px-7 py-5 text-left
-                         hover:border-crimson hover:bg-crimson hover:shadow-lg
+                         hover:border-dustyblue hover:bg-dustyblue hover:shadow-lg
                          transition-[border-color,background-color,box-shadow] duration-200"
             >
               <span className="font-medium text-lg text-ink transition-colors group-hover:text-cream">
@@ -52,7 +52,7 @@ export default function LandingPage() {
               {/* Cerchio con freccia: freccia nera, riempimento oro translucido; all'hover crema */}
               <span
                 className="grid shrink-0 place-items-center w-9 h-9 rounded-full
-                           border-2 border-gold bg-gold/20 text-ink transition-colors
+                           border-2 border-dustyblue bg-dustyblue/20 text-ink transition-colors
                            group-hover:border-cream group-hover:bg-cream/20 group-hover:text-cream"
                 aria-hidden="true"
               >

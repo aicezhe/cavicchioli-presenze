@@ -51,7 +51,7 @@ export default function AdminDashboard() {
   // Contenuto del menu hamburger: profilo + impostazioni + logout
   const headerMenu = (close: () => void) => (
     <>
-      <div className="px-4 py-2 border-b border-gold/20">
+      <div className="px-4 py-2 border-b border-dustyblue/20">
         <p className="text-sm font-medium">{profile?.name}</p>
         <p className="text-xs text-warmgray truncate">{profile?.email}</p>
       </div>
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
       </button>
       <button
         onClick={() => signOut(auth)}
-        className="w-full text-left px-4 py-2 text-sm text-crimson hover:bg-cream transition-colors"
+        className="w-full text-left px-4 py-2 text-sm text-dustyblue hover:bg-cream transition-colors"
       >
         Esci
       </button>
@@ -83,8 +83,8 @@ export default function AdminDashboard() {
       <div className="min-h-screen flex flex-col">
         <AppHeader tools menu={headerMenu} />
         <main className="flex-1 flex items-center justify-center px-4">
-          <form onSubmit={handleCreateSchool} className="w-full max-w-sm bg-white rounded-xl border border-gold/40 p-6 sm:p-8">
-            <h1 className="font-serif text-xl font-semibold text-crimson">Crea la tua scuola</h1>
+          <form onSubmit={handleCreateSchool} className="w-full max-w-sm bg-white rounded-xl border border-dustyblue/40 p-6 sm:p-8">
+            <h1 className="font-serif text-xl font-semibold text-dustyblue">Crea la tua scuola</h1>
             <p className="mt-1 text-sm text-warmgray">
               Per iniziare, dai un nome alla scuola che gestirai.
             </p>
@@ -94,11 +94,11 @@ export default function AdminDashboard() {
               onChange={(e) => setNewSchoolName(e.target.value)}
               placeholder='Es. Scuola Secondaria "Giacomo Cavicchioli"'
               className="mt-4 w-full rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2.5
-                         focus:outline-none focus:ring-2 focus:ring-crimson/60 focus:border-crimson"
+                         focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
             />
             <button
               type="submit"
-              className="mt-5 w-full rounded-lg bg-crimson px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity"
+              className="mt-5 w-full rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity"
             >
               Crea scuola
             </button>
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
         <StatsCards stats={stats} />
 
         {/* Barra delle sezioni */}
-        <div className="border-b border-gold/30 overflow-x-auto">
+        <div className="border-b border-dustyblue/30 overflow-x-auto">
           <nav className="flex gap-1 min-w-max">
             {TABS.map((t) => (
               <button
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
                 className={
                   'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ' +
                   (tab === t.key
-                    ? 'border-crimson text-crimson'
+                    ? 'border-dustyblue text-dustyblue'
                     : 'border-transparent text-warmgray hover:text-ink')
                 }
               >

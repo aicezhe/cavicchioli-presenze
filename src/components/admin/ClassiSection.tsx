@@ -45,7 +45,7 @@ export default function ClassiSection({
         <h2 className="font-serif text-xl font-semibold">Classi</h2>
         <button
           onClick={() => setShowNewClass(true)}
-          className="rounded-lg bg-crimson px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity"
+          className="rounded-lg bg-dustyblue px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity"
         >
           + Nuova classe
         </button>
@@ -83,13 +83,13 @@ export default function ClassiSection({
               onChange={(e) => setNewClassName(e.target.value)}
               placeholder="Es. 1ª A"
               className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
-                         focus:outline-none focus:ring-2 focus:ring-crimson/60 focus:border-crimson"
+                         focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
             />
           </label>
           <div className="flex gap-3">
             <button
               type="submit"
-              className="flex-1 rounded-lg bg-crimson px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity"
+              className="flex-1 rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity"
             >
               Crea
             </button>

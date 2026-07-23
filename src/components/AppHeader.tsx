@@ -41,7 +41,7 @@ export default function AppHeader({ centered, tools, onSearchClick, right, menu 
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <header className="bg-crimson text-cream border-b-2 border-gold">
+    <header className="bg-dustyblue text-cream border-b border-black/10">
       <div
         className={
           'mx-auto max-w-5xl px-4 py-3 flex items-center gap-3 ' +
@@ -78,7 +78,7 @@ export default function AppHeader({ centered, tools, onSearchClick, right, menu 
                   <>
                     {/* Overlay per chiudere cliccando fuori */}
                     <div className="fixed inset-0 z-40" onClick={closeMenu} />
-                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-gold/40 bg-white text-ink shadow-lg z-50 py-1.5">
+                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-dustyblue/40 bg-white text-ink shadow-lg z-50 py-1.5">
                       {menu(closeMenu)}
                     </div>
                   </>

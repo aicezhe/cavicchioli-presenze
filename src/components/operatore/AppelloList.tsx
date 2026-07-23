@@ -34,7 +34,7 @@ export default function AppelloList({ schoolId, classId, operatoreUid, session }
           <p className="font-serif text-lg font-semibold capitalize">{todayLabel()}</p>
         </div>
         {/* Progresso: quanti segnati presenti (aiuta a non dimenticare nessuno) */}
-        <p className="text-sm font-medium text-crimson">
+        <p className="text-sm font-medium text-dustyblue">
           {presentCount} / {children.length} presenti
         </p>
       </div>
