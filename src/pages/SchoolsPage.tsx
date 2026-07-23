@@ -51,7 +51,7 @@ export default function SchoolsPage() {
         ) : schools.length === 0 ? (
           <p className="mt-10 text-center text-sm text-warmgray">Nessuna scuola disponibile.</p>
         ) : (
-          <div className="mt-10 flex flex-col gap-4 max-w-2xl mx-auto">
+          <div className="mt-10 flex flex-col gap-4 max-w-lg mx-auto">
             {schools.map((school, i) => {
               const color = schoolColor(school)
               const isHover = hovered === school.id
@@ -74,7 +74,7 @@ export default function SchoolsPage() {
                     // Riempimento semi-trasparente nel colore della scuola solo all'hover
                     backgroundColor: isHover ? `${color}2e` : '#fff',
                   }}
-                  className="flex items-center gap-4 rounded-[28px] border-2 px-5 py-4 text-left
+                  className="flex items-center justify-center gap-3 rounded-[28px] border-2 px-5 py-4 text-center
                              shadow-sm hover:shadow-xl transition-[background-color,box-shadow] duration-200"
                 >
                   <Crest size={52} variant="compact" color={color} initials={schoolInitials(school)} />

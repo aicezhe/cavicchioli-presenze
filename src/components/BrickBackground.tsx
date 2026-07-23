@@ -7,31 +7,23 @@ const BRICK_H = 46
 
 type Seg = { x1: number; y1: number; x2: number; y2: number }
 
-// Piccola irregolarità per un tratto "disegnato a mano" (deterministica per indice)
-function jitter(i: number, k: number): number {
-  return ((Math.sin(i * 12.9898 + k * 78.233) * 43758.5453) % 1) * 5 - 2.5
-}
-
-/** Muro di mattoni parziale in un angolo: linee di malta orizzontali + verticali sfalsate */
+/** Muro di mattoni parziale in un angolo: linee di malta perfettamente diritte, orizzontali + verticali sfalsate */
 function cornerBricks(ox: number, oy: number, dx: number, dy: number, rows: number, cols: number): Seg[] {
   const segs: Seg[] = []
-  let n = 0
   for (let r = 0; r <= rows; r++) {
     const y = oy + dy * r * BRICK_H
-    segs.push({ x1: ox, y1: y + jitter(n, 1), x2: ox + dx * cols * BRICK_W, y2: y + jitter(n, 2) })
-    n++
+    segs.push({ x1: ox, y1: y, x2: ox + dx * cols * BRICK_W, y2: y })
   }
   for (let r = 0; r < rows; r++) {
     const offset = (r % 2) * (BRICK_W / 2)
     for (let c = 0; c <= cols; c++) {
       const x = ox + dx * (c * BRICK_W + offset)
       segs.push({
-        x1: x + jitter(n, 1),
+        x1: x,
         y1: oy + dy * r * BRICK_H,
-        x2: x + jitter(n, 2),
+        x2: x,
         y2: oy + dy * (r + 1) * BRICK_H,
       })
-      n++
     }
   }
   return segs
@@ -55,7 +47,7 @@ export default function BrickBackground() {
   return (
     <svg
       aria-hidden="true"
-      className="absolute inset-0 w-full h-full pointer-events-none"
+      className="hidden md:block absolute inset-0 w-full h-full pointer-events-none"
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid slice"
     >
@@ -69,13 +61,14 @@ export default function BrickBackground() {
             x2={s.x2}
             y2={s.y2}
             stroke="#F8F6F2"
-            strokeWidth={1.4}
+            strokeWidth={1.2}
             strokeLinecap="round"
             style={{
               strokeDasharray: len,
               strokeDashoffset: len,
               opacity: 0,
-              animation: `brick-draw 0.7s ease-out ${0.15 + i * 0.02}s forwards`,
+              // Più morbida: tracciato più lento e con easing dolce
+              animation: `brick-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) ${0.2 + i * 0.03}s forwards`,
             }}
           />
         )
