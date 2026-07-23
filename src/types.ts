@@ -20,6 +20,31 @@ export type UserProfile = {
 export type School = {
   name: string
   adminIds: string[]
+  /** Colore identità della scuola (emblema, bordi, temi). Default: dusty-blue */
+  primaryColor?: string
+  /** Iniziali mostrate sull'emblema. Default: derivate dal nome */
+  emblemInitials?: string
+}
+
+/** Colore di default della piattaforma quando la scuola non ne ha uno */
+export const DEFAULT_SCHOOL_COLOR = '#6E859C'
+
+/** Colore effettivo della scuola (con fallback) */
+export function schoolColor(s: Pick<School, 'primaryColor'>): string {
+  return s.primaryColor || DEFAULT_SCHOOL_COLOR
+}
+
+/** Iniziali dell'emblema: quelle impostate, altrimenti derivate dal nome (max 2 lettere) */
+export function schoolInitials(s: Pick<School, 'name' | 'emblemInitials'>): string {
+  if (s.emblemInitials) return s.emblemInitials
+  const letters = s.name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+  return letters || '—'
 }
 
 export type SchoolClass = {
