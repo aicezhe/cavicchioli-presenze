@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import OperatoreDashboard from './pages/operatore/OperatoreDashboard'
+import GenitoreDashboard from './pages/genitore/GenitoreDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -25,6 +26,11 @@ function App() {
       {/* Solo ruolo operatore */}
       <Route element={<ProtectedRoute roles={['operatore']} />}>
         <Route path="/operatore" element={<OperatoreDashboard />} />
+      </Route>
+
+      {/* Solo ruolo genitore */}
+      <Route element={<ProtectedRoute roles={['genitore']} />}>
+        <Route path="/genitore" element={<GenitoreDashboard />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

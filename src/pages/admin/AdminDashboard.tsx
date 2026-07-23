@@ -25,7 +25,8 @@ type TabKey = (typeof TABS)[number]['key'] | 'impostazioni'
 
 export default function AdminDashboard() {
   const { user, profile } = useAuth()
-  const { school, loading: schoolLoading, createSchool, updateSchoolName } = useSchool(user?.uid)
+  const { school, loading: schoolLoading, createSchool, updateSchoolName, addSchoolAdmin } =
+    useSchool(user?.uid)
   const { classes, addClass, removeClass, setOperator } = useClasses(school?.id)
   // Tutti i bambini della scuola: condivisi tra ricerca e sezione Genitori (niente listener doppi)
   const { children: allChildren, setParentLink } = useAllChildren(school?.id, classes)
@@ -159,7 +160,11 @@ export default function AdminDashboard() {
           <GenitoriSection children={allChildren} setParentLink={setParentLink} />
         )}
         {school && tab === 'impostazioni' && (
-          <ImpostazioniSection school={school} updateSchoolName={updateSchoolName} />
+          <ImpostazioniSection
+            school={school}
+            updateSchoolName={updateSchoolName}
+            addSchoolAdmin={addSchoolAdmin}
+          />
         )}
       </main>
 

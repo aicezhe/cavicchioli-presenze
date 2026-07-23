@@ -7,22 +7,28 @@ import {
   setDoc,
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
-import type { Child, WithId } from '../types'
+import type { Child, Session, WithId } from '../types'
 
 /** Data di oggi in formato ISO (YYYY-MM-DD): è l'id del documento attendance */
 export const todayIso = () => new Date().toISOString().slice(0, 10)
 
 /**
- * Appello di una classe per OGGI: elenco bambini + stato presenza + scrittura immediata.
+ * Appello di una classe per OGGI, per una SESSIONE (mattina o pomeriggio).
  *
  * - I bambini sono ordinati per cognome (comodo per l'appello).
  * - Per ogni bambino un listener su attendance/{today}: lo stato è sempre allineato.
- * - setPresent scrive subito attendance/{today} (present, markedBy, timestamp) con UI
- *   ottimistica: aggiorno lo stato locale prima della conferma, e se la scrittura fallisce
- *   ripristino. Nessun pulsante "Salva": ogni tocco è già persistito.
+ * - setPresent scrive subito attendance/{today} con merge, aggiornando SOLO il campo della
+ *   sessione corrente (mattina/pomeriggio) senza sovrascrivere l'altra. UI ottimistica:
+ *   aggiorno lo stato locale prima della conferma, e se la scrittura fallisce ripristino.
+ *   Nessun pulsante "Salva": ogni tocco è già persistito.
  */
-export function useAppello(schoolId: string | undefined, classId: string | undefined) {
+export function useAppello(
+  schoolId: string | undefined,
+  classId: string | undefined,
+  session: Session,
+) {
   const [children, setChildren] = useState<WithId<Child>[]>([])
+  // Per ogni bambino: presenza della sessione corrente
   const [present, setPresentMap] = useState<Record<string, boolean>>({})
   const today = todayIso()
 
@@ -42,7 +48,7 @@ export function useAppello(schoolId: string | undefined, classId: string | undef
     return unsub
   }, [schoolId, classId])
 
-  // Presenza di oggi: un listener per bambino su attendance/{today}
+  // Presenza di oggi per la sessione scelta: un listener per bambino su attendance/{today}
   const childIds = children.map((c) => c.id).join(',')
   useEffect(() => {
     if (!schoolId || !classId || children.length === 0) return
@@ -52,15 +58,15 @@ export function useAppello(schoolId: string | undefined, classId: string | undef
         (snap) =>
           setPresentMap((prev) => ({
             ...prev,
-            [c.id]: snap.exists() ? snap.data().present === true : false,
+            [c.id]: snap.exists() ? snap.data()[session] === true : false,
           })),
       ),
     )
     return () => unsubs.forEach((u) => u())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schoolId, classId, childIds, today])
+  }, [schoolId, classId, childIds, today, session])
 
-  // Scrittura immediata con UI ottimistica
+  // Scrittura immediata (merge sul solo campo della sessione) con UI ottimistica
   const setPresent = useCallback(
     async (childId: string, value: boolean, markedBy: string) => {
       if (!schoolId || !classId) return
@@ -69,14 +75,15 @@ export function useAppello(schoolId: string | undefined, classId: string | undef
       try {
         await setDoc(
           doc(db, 'schools', schoolId, 'classes', classId, 'children', childId, 'attendance', today),
-          { present: value, markedBy, timestamp: serverTimestamp() },
+          { [session]: value, markedBy, timestamp: serverTimestamp() },
+          { merge: true }, // non tocca l'altra sessione
         )
       } catch (err) {
         console.error('Impossibile salvare la presenza:', err)
         setPresentMap((prev) => ({ ...prev, [childId]: previous })) // ripristino
       }
     },
-    [schoolId, classId, today, present],
+    [schoolId, classId, today, session, present],
   )
 
   const presentCount = children.filter((c) => present[c.id]).length

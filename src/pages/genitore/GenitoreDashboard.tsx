@@ -2,29 +2,29 @@ import { useEffect, useState } from 'react'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../context/AuthContext'
-import { useOperatoreClasses } from '../../hooks/useOperatoreClasses'
+import { useMyChildren } from '../../hooks/useMyChildren'
+import { useChildAttendance } from '../../hooks/useChildAttendance'
 import AppHeader from '../../components/AppHeader'
 import SessionSwitch from '../../components/SessionSwitch'
-import ClassSwitcher from '../../components/operatore/ClassSwitcher'
-import AppelloList from '../../components/operatore/AppelloList'
+import ChildSwitcher from '../../components/genitore/ChildSwitcher'
+import AttendanceCalendar from '../../components/genitore/AttendanceCalendar'
 import type { Session } from '../../types'
 
-export default function OperatoreDashboard() {
+export default function GenitoreDashboard() {
   const { user, profile } = useAuth()
-  const { classes, loading } = useOperatoreClasses(user?.uid)
+  const { children, loading } = useMyChildren(user?.email ?? undefined)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [session, setSession] = useState<Session>('morning')
 
-  // Seleziona la prima classe appena disponibili (o se quella attiva sparisce)
+  // Seleziona il primo figlio quando disponibile
   useEffect(() => {
-    if (classes.length === 0) {
-      setActiveId(null)
-    } else if (!activeId || !classes.some((c) => c.id === activeId)) {
-      setActiveId(classes[0].id)
-    }
-  }, [classes, activeId])
+    if (children.length === 0) setActiveId(null)
+    else if (!activeId || !children.some((c) => c.id === activeId)) setActiveId(children[0].id)
+  }, [children, activeId])
 
-  // Contenuto del menu hamburger: profilo + logout
+  const active = children.find((c) => c.id === activeId)
+  const records = useChildAttendance(active?.schoolId, active?.classId, active?.id)
+
   const headerMenu = (close: () => void) => (
     <>
       <div className="px-4 py-2 border-b border-gold/20">
@@ -43,8 +43,6 @@ export default function OperatoreDashboard() {
     </>
   )
 
-  const active = classes.find((c) => c.id === activeId)
-
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader tools menu={headerMenu} />
@@ -52,36 +50,32 @@ export default function OperatoreDashboard() {
       <main className="flex-1 mx-auto max-w-2xl w-full px-4 py-8 space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="font-serif text-2xl font-semibold">Appello</h1>
-            <p className="text-sm text-warmgray">Registro presenze pre/post-scuola</p>
+            <h1 className="font-serif text-2xl font-semibold">Presenze</h1>
+            <p className="text-sm text-warmgray">
+              {active ? `${active.firstName} ${active.lastName}` : 'Calendario presenze'}
+            </p>
           </div>
           {/* Sessione: mattina (pre-scuola) o pomeriggio (post-scuola) */}
-          {classes.length > 0 && <SessionSwitch value={session} onChange={setSession} />}
+          {children.length > 0 && <SessionSwitch value={session} onChange={setSession} />}
         </div>
 
         {loading ? (
           <p className="text-sm text-warmgray animate-pulse">Caricamento…</p>
-        ) : classes.length === 0 ? (
+        ) : children.length === 0 ? (
           <div className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3">
-            <p className="font-medium">Nessuna classe assegnata</p>
+            <p className="font-medium">Nessun bambino collegato</p>
             <p className="mt-1 text-sm text-warmgray">
-              Non sei ancora assegnato a nessuna classe. Contatta l&apos;amministrazione della scuola.
+              Il tuo account non è ancora collegato a nessun bambino. Contatta
+              l&apos;amministrazione della scuola.
             </p>
           </div>
         ) : (
           <>
-            {/* Selettore solo se le classi sono più di una */}
-            {classes.length > 1 && activeId && (
-              <ClassSwitcher classes={classes} activeId={activeId} onSelect={setActiveId} />
+            {/* Selettore solo se i figli sono più di uno */}
+            {children.length > 1 && activeId && (
+              <ChildSwitcher children={children} activeId={activeId} onSelect={setActiveId} />
             )}
-            {active && user && (
-              <AppelloList
-                schoolId={active.schoolId}
-                classId={active.id}
-                operatoreUid={user.uid}
-                session={session}
-              />
-            )}
+            <AttendanceCalendar records={records} session={session} />
           </>
         )}
       </main>

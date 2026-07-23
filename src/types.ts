@@ -37,8 +37,19 @@ export type Child = {
   parentIds: string[]
 }
 
+// Due sessioni di pre/post-scuola: mattina e pomeriggio, registrate separatamente
+export type Session = 'morning' | 'evening'
+
+export const SESSION_LABELS: Record<Session, string> = {
+  morning: 'Mattina',
+  evening: 'Pomeriggio',
+}
+
 export type AttendanceRecord = {
-  present: boolean
+  /** presenza al pre-scuola (mattina) */
+  morning: boolean
+  /** presenza al post-scuola (pomeriggio) */
+  evening: boolean
   markedBy: string
   timestamp: number
 }

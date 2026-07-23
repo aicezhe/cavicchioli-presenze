@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   addDoc,
+  arrayUnion,
   collection,
   doc,
   onSnapshot,
@@ -59,5 +60,10 @@ export function useSchool(uid: string | undefined) {
     [],
   )
 
-  return { school, loading, createSchool, updateSchoolName }
+  // Aggiunge un uid agli amministratori della scuola
+  const addSchoolAdmin = useCallback(async (schoolId: string, uid: string) => {
+    await updateDoc(doc(db, 'schools', schoolId), { adminIds: arrayUnion(uid) })
+  }, [])
+
+  return { school, loading, createSchool, updateSchoolName, addSchoolAdmin }
 }

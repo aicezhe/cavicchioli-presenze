@@ -53,8 +53,9 @@ export function useAdminStats(
           const attSnap = await getDocs(
             collection(db, 'schools', schoolId!, 'classes', cls.id, 'children', child.id, 'attendance'),
           )
-          const today = attSnap.docs.find((a) => a.id === todayIso())
-          if (today?.data().present === true) presentCount += 1
+          // Presente oggi = presente ad almeno una sessione (mattina o pomeriggio)
+          const today = attSnap.docs.find((a) => a.id === todayIso())?.data()
+          if (today?.morning === true || today?.evening === true) presentCount += 1
         }
       }
 

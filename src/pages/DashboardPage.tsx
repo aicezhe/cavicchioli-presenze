@@ -13,6 +13,7 @@ export default function DashboardPage() {
   // Ruoli con pagina dedicata
   if (profile?.role === 'admin') return <Navigate to="/admin" replace />
   if (profile?.role === 'operatore') return <Navigate to="/operatore" replace />
+  if (profile?.role === 'genitore') return <Navigate to="/genitore" replace />
 
   return (
     <div className="min-h-screen flex flex-col">

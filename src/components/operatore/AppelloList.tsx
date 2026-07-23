@@ -1,10 +1,13 @@
 import { useAppello } from '../../hooks/useAppello'
 import ChildAttendanceRow from './ChildAttendanceRow'
+import type { Session } from '../../types'
+import { SESSION_LABELS } from '../../types'
 
 type AppelloListProps = {
   schoolId: string
   classId: string
   operatoreUid: string
+  session: Session
 }
 
 // Data di oggi in italiano esteso, es. "mercoledì 22 luglio 2026"
@@ -18,14 +21,16 @@ function todayLabel(): string {
 }
 
 /** Appello del giorno: intestazione con data, progresso, elenco bambini con interruttore. */
-export default function AppelloList({ schoolId, classId, operatoreUid }: AppelloListProps) {
-  const { children, present, setPresent, presentCount } = useAppello(schoolId, classId)
+export default function AppelloList({ schoolId, classId, operatoreUid, session }: AppelloListProps) {
+  const { children, present, setPresent, presentCount } = useAppello(schoolId, classId, session)
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <p className="text-sm text-warmgray">Appello di</p>
+          <p className="text-sm text-warmgray">
+            Appello di <span className="lowercase">{SESSION_LABELS[session]}</span> —
+          </p>
           <p className="font-serif text-lg font-semibold capitalize">{todayLabel()}</p>
         </div>
         {/* Progresso: quanti segnati presenti (aiuta a non dimenticare nessuno) */}

@@ -1,4 +1,8 @@
+import { useState } from 'react'
 import { useUsersByRole } from '../../hooks/useUsersByRole'
+import { useProvisionUser } from '../../hooks/useProvisionUser'
+import Modal from './Modal'
+import AddUserForm from './AddUserForm'
 import type { ChildWithClass } from '../../hooks/useAllChildren'
 
 type GenitoriSectionProps = {
@@ -16,18 +20,28 @@ const sameEmail = (a: string, b: string) => a.trim().toLowerCase() === b.trim().
 
 /**
  * Vista d'insieme sui genitori: a quali bambini sono collegati (via parentEmails).
- * L'admin può verificare e correggere il collegamento genitore-bambino.
+ * L'admin può creare un genitore, verificare e correggere il collegamento genitore-bambino.
  * I bambini arrivano dal dashboard (condivisi con la ricerca) per evitare listener doppi.
  */
 export default function GenitoriSection({ children, setParentLink }: GenitoriSectionProps) {
   const parents = useUsersByRole('genitore')
+  const { provisionUser } = useProvisionUser()
+  const [showAdd, setShowAdd] = useState(false)
 
   const childrenOf = (email: string): ChildWithClass[] =>
     children.filter((c) => (c.parentEmails ?? []).some((pe) => sameEmail(pe, email)))
 
   return (
     <section className="space-y-4">
-      <h2 className="font-serif text-xl font-semibold">Genitori</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="font-serif text-xl font-semibold">Genitori</h2>
+        <button
+          onClick={() => setShowAdd(true)}
+          className="rounded-lg bg-crimson px-4 py-2 text-sm text-cream font-medium hover:opacity-90 transition-opacity"
+        >
+          + Aggiungi genitore
+        </button>
+      </div>
 
       {parents.length === 0 ? (
         <p className="text-sm text-warmgray">
@@ -103,6 +117,16 @@ export default function GenitoriSection({ children, setParentLink }: GenitoriSec
           })}
         </div>
       )}
+
+      <Modal open={showAdd} title="Nuovo genitore" onClose={() => setShowAdd(false)}>
+        <AddUserForm
+          submitLabel="Crea genitore"
+          onSubmit={async (name, email, password) => {
+            await provisionUser('genitore', name, email, password)
+          }}
+          onDone={() => setShowAdd(false)}
+        />
+      </Modal>
     </section>
   )
 }

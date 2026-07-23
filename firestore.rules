@@ -48,6 +48,12 @@ service cloud.firestore {
       allow read: if signedIn() && request.auth.uid in resource.data.operatorIds;
     }
 
+    // COLLECTION GROUP: il genitore trova i PROPRI figli in qualunque classe/scuola.
+    // Condizione solo su resource.data.parentEmails (email autenticata) → query filtrabile.
+    match /{path=**}/children/{childId} {
+      allow read: if signedIn() && request.auth.token.email in resource.data.parentEmails;
+    }
+
     match /users/{uid} {
       // Ognuno vede il proprio profilo, l'admin vede tutti (serve per assegnare gli operatori)
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
