@@ -5,10 +5,12 @@ type StatItem = { label: string; value: string }
 function buildItems(stats: AdminStats): StatItem[] {
   return [
     { label: 'Classi', value: String(stats.classCount) },
-    { label: 'Bambini', value: String(stats.childrenCount) },
+    // null = aggregato in ricalcolo → "…" (non i numeri della scuola precedente)
+    { label: 'Bambini', value: stats.childrenCount === null ? '…' : String(stats.childrenCount) },
     {
       label: 'Presenze oggi',
-      value: stats.presentPct === null ? '—' : `${stats.presentPct}%`,
+      value:
+        stats.childrenCount === null ? '…' : stats.presentPct === null ? '—' : `${stats.presentPct}%`,
     },
     { label: 'Operatori attivi', value: String(stats.operatorCount) },
   ]

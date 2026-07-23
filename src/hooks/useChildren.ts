@@ -7,10 +7,42 @@ import {
   getDocs,
   onSnapshot,
   query,
+  updateDoc,
   where,
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { Child, WithId } from '../types'
+
+/** Dati del form bambino (creazione e modifica) */
+export type ChildFormData = {
+  firstName: string
+  lastName: string
+  dob: string
+  parentEmail: string
+}
+
+// Normalizza i dati + risolve l'uid del genitore già registrato con quell'email.
+// A livello di modulo perché non dipende da scuola/classe (solo dai dati e da db).
+async function buildChildDoc(data: ChildFormData) {
+  const parentEmail = data.parentEmail.trim().toLowerCase()
+  let parentIds: string[] = []
+  if (parentEmail) {
+    const q = query(
+      collection(db, 'users'),
+      where('email', '==', parentEmail),
+      where('role', '==', 'genitore'),
+    )
+    const found = await getDocs(q)
+    parentIds = found.docs.map((d) => d.id)
+  }
+  return {
+    firstName: data.firstName.trim(),
+    lastName: data.lastName.trim(),
+    dob: data.dob,
+    parentEmails: parentEmail ? [parentEmail] : [],
+    parentIds,
+  }
+}
 
 /**
  * Bambini di una classe in tempo reale (stesso motivo di useClasses: lista viva).
@@ -45,29 +77,21 @@ export function useChildren(schoolId: string | undefined, classId: string | unde
   }, [schoolId, classId])
 
   const addChild = useCallback(
-    async (data: { firstName: string; lastName: string; dob: string; parentEmail: string }) => {
+    async (data: ChildFormData) => {
       if (!schoolId || !classId) return
-      const parentEmail = data.parentEmail.trim().toLowerCase()
+      await addDoc(collection(db, 'schools', schoolId, 'classes', classId, 'children'), await buildChildDoc(data))
+    },
+    [schoolId, classId],
+  )
 
-      // Prova a risolvere subito l'uid di un genitore già registrato con quella email
-      let parentIds: string[] = []
-      if (parentEmail) {
-        const q = query(
-          collection(db, 'users'),
-          where('email', '==', parentEmail),
-          where('role', '==', 'genitore'),
-        )
-        const found = await getDocs(q)
-        parentIds = found.docs.map((d) => d.id)
-      }
-
-      await addDoc(collection(db, 'schools', schoolId, 'classes', classId, 'children'), {
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-        dob: data.dob,
-        parentEmails: parentEmail ? [parentEmail] : [],
-        parentIds,
-      })
+  // Modifica i dati di un bambino esistente (nome, cognome, data, email genitore)
+  const updateChild = useCallback(
+    async (childId: string, data: ChildFormData) => {
+      if (!schoolId || !classId) return
+      await updateDoc(
+        doc(db, 'schools', schoolId, 'classes', classId, 'children', childId),
+        await buildChildDoc(data),
+      )
     },
     [schoolId, classId],
   )
@@ -80,5 +104,5 @@ export function useChildren(schoolId: string | undefined, classId: string | unde
     [schoolId, classId],
   )
 
-  return { children, loading, addChild, removeChild }
+  return { children, loading, addChild, updateChild, removeChild }
 }

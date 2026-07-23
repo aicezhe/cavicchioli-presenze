@@ -1,26 +1,26 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import type { ChildFormData } from '../../hooks/useChildren'
 
 type AddChildFormProps = {
-  onSubmit: (data: {
-    firstName: string
-    lastName: string
-    dob: string
-    parentEmail: string
-  }) => Promise<void>
+  onSubmit: (data: ChildFormData) => Promise<void>
   onDone: () => void
+  /** Valori iniziali (per la modifica di un bambino esistente) */
+  initial?: ChildFormData
+  /** Etichetta del pulsante di conferma. Default: "Aggiungi" */
+  submitLabel?: string
 }
 
 const inputClass =
   'mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5 ' +
   'focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue'
 
-/** Form per aggiungere un bambino a una classe. */
-export default function AddChildForm({ onSubmit, onDone }: AddChildFormProps) {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [dob, setDob] = useState('')
-  const [parentEmail, setParentEmail] = useState('')
+/** Form per aggiungere o modificare un bambino di una classe. */
+export default function AddChildForm({ onSubmit, onDone, initial, submitLabel = 'Aggiungi' }: AddChildFormProps) {
+  const [firstName, setFirstName] = useState(initial?.firstName ?? '')
+  const [lastName, setLastName] = useState(initial?.lastName ?? '')
+  const [dob, setDob] = useState(initial?.dob ?? '')
+  const [parentEmail, setParentEmail] = useState(initial?.parentEmail ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -74,7 +74,7 @@ export default function AddChildForm({ onSubmit, onDone }: AddChildFormProps) {
           disabled={saving}
           className="flex-1 rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {saving ? 'Salvataggio…' : 'Aggiungi'}
+          {saving ? 'Salvataggio…' : submitLabel}
         </button>
         <button
           type="button"

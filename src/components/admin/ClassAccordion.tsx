@@ -5,7 +5,7 @@ import { useOperators } from '../../hooks/useOperators'
 import Modal from './Modal'
 import AddChildForm from './AddChildForm'
 import AssignOperatoreForm from './AssignOperatoreForm'
-import type { SchoolClass, WithId } from '../../types'
+import type { Child, SchoolClass, WithId } from '../../types'
 
 type ClassAccordionProps = {
   schoolId: string
@@ -39,7 +39,9 @@ export default function ClassAccordion({
   }, [openSignal])
   const [showAddChild, setShowAddChild] = useState(false)
   const [showAssign, setShowAssign] = useState(false)
-  const { children, addChild, removeChild } = useChildren(schoolId, open ? cls.id : undefined)
+  // Bambino in modifica (null = nessuna modifica aperta)
+  const [editChild, setEditChild] = useState<WithId<Child> | null>(null)
+  const { children, addChild, updateChild, removeChild } = useChildren(schoolId, open ? cls.id : undefined)
   const operators = useOperators()
 
   // Nomi degli operatori assegnati (per il sottotitolo)
@@ -93,24 +95,32 @@ export default function ClassAccordion({
                 ) : (
                   <ul className="divide-y divide-dustyblue/20">
                     {children.map((child) => (
-                      <li key={child.id} className="flex items-center justify-between py-2 text-sm">
-                        <span>
+                      <li key={child.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                        <span className="min-w-0">
                           <span className="font-medium">
                             {child.firstName} {child.lastName}
                           </span>
                           <span className="text-warmgray"> · {formatDob(child.dob)}</span>
                         </span>
-                        <button
-                          onClick={async () => {
-                            if (confirm(`Rimuovere ${child.firstName} ${child.lastName}?`)) {
-                              await removeChild(child.id)
-                              onDataChange()
-                            }
-                          }}
-                          className="text-warmgray hover:text-dustyblue transition-colors text-xs"
-                        >
-                          Rimuovi
-                        </button>
+                        <span className="flex items-center gap-3 shrink-0">
+                          <button
+                            onClick={() => setEditChild(child)}
+                            className="text-dustyblue hover:underline text-xs"
+                          >
+                            Modifica
+                          </button>
+                          <button
+                            onClick={async () => {
+                              if (confirm(`Rimuovere ${child.firstName} ${child.lastName}?`)) {
+                                await removeChild(child.id)
+                                onDataChange()
+                              }
+                            }}
+                            className="text-warmgray hover:text-dustyblue transition-colors text-xs"
+                          >
+                            Rimuovi
+                          </button>
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -160,6 +170,30 @@ export default function ClassAccordion({
           }}
           onDone={() => setShowAddChild(false)}
         />
+      </Modal>
+
+      {/* Modale: modifica bambino */}
+      <Modal
+        open={editChild !== null}
+        title={`Modifica · ${editChild?.firstName ?? ''} ${editChild?.lastName ?? ''}`}
+        onClose={() => setEditChild(null)}
+      >
+        {editChild && (
+          <AddChildForm
+            initial={{
+              firstName: editChild.firstName,
+              lastName: editChild.lastName,
+              dob: editChild.dob,
+              parentEmail: editChild.parentEmails?.[0] ?? '',
+            }}
+            submitLabel="Salva"
+            onSubmit={async (data) => {
+              await updateChild(editChild.id, data)
+              onDataChange()
+            }}
+            onDone={() => setEditChild(null)}
+          />
+        )}
       </Modal>
 
       {/* Modale: gestisci operatori */}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import Crest from './Crest'
+import { PlatformCrest } from './PlatformCrest'
 
 type AppHeaderProps = {
   /** landing: scudo + nome centrati, senza strumenti */
@@ -57,8 +57,9 @@ export default function AppHeader({ centered, tools, onSearchClick, right, menu,
           (centered ? 'justify-center' : '')
         }
       >
-        {emblem ?? <Crest size={40} variant="compact" />}
-        <span className="font-serif text-xl font-semibold">{title ?? 'Cavicchioli'}</span>
+        {/* Default piattaforma NOTA (le cabine passano emblema/nome della loro scuola) */}
+        {emblem ?? <PlatformCrest variant="icon" size={30} />}
+        <span className="font-serif text-xl font-semibold">{title ?? 'NOTA'}</span>
 
         {!centered && (
           <div className="ml-auto flex items-center gap-4">

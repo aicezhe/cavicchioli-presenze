@@ -26,6 +26,9 @@ export function useClasses(schoolId: string | undefined) {
 
   useEffect(() => {
     if (!schoolId) return
+    // Reset immediato al cambio scuola: evita di mostrare le classi della scuola precedente
+    setClasses([])
+    setLoading(true)
     const ref = collection(db, 'schools', schoolId, 'classes')
     const unsub = onSnapshot(
       ref,

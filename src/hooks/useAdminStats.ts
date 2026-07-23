@@ -5,8 +5,9 @@ import type { SchoolClass, WithId } from '../types'
 
 export type AdminStats = {
   classCount: number
-  childrenCount: number
-  /** % di bambini presenti oggi su tutta la scuola (0–100), null se non ci sono bambini */
+  /** null mentre l'aggregato è in ricalcolo (così non si mostrano i numeri della scuola precedente) */
+  childrenCount: number | null
+  /** % di bambini presenti oggi (0–100); null se in ricalcolo o senza bambini */
   presentPct: number | null
   operatorCount: number
 }
@@ -16,27 +17,35 @@ const todayIso = () => new Date().toISOString().slice(0, 10)
 /**
  * Statistiche aggregate della scuola.
  *
- * Qui uso getDocs (una fotografia) e non onSnapshot: le statistiche sono un totale
- * calcolato su MOLTE sotto-collezioni (bambini di ogni classe + la loro presenza di oggi).
- * Tenere un listener live su tutte significherebbe decine di sottoscrizioni per un numero
- * che non serve aggiornare al millisecondo. Ricalcolo quando cambiano le classi o dopo una
- * mutazione (refreshKey). Le LISTE interattive (classi, bambini) restano invece onSnapshot.
+ * classCount e operatorCount si ricavano SUBITO da `classes` (sincroni) → al cambio scuola
+ * si aggiornano all'istante. childrenCount e presentPct richiedono getDocs su molte
+ * sotto-collezioni: durante il ricalcolo valgono null (la UI mostra "…"), così non restano
+ * mai i numeri della scuola precedente. Uso getDocs e non onSnapshot perché è un totale che
+ * non serve aggiornare al millisecondo; ricalcolo al cambio classi o dopo una mutazione.
  */
 export function useAdminStats(
   schoolId: string | undefined,
   classes: WithId<SchoolClass>[],
   refreshKey: number,
 ): AdminStats {
-  const [stats, setStats] = useState<AdminStats>({
-    classCount: 0,
-    childrenCount: 0,
+  const [aggregate, setAggregate] = useState<{ childrenCount: number | null; presentPct: number | null }>({
+    childrenCount: null,
     presentPct: null,
-    operatorCount: 0,
   })
 
+  // Sincroni: sempre allineati alla scuola attiva
+  const classCount = classes.length
+  const operatorIds = new Set<string>()
+  classes.forEach((c) => c.operatorIds?.forEach((id) => operatorIds.add(id)))
+  const operatorCount = operatorIds.size
+
   useEffect(() => {
-    if (!schoolId) return
+    if (!schoolId) {
+      setAggregate({ childrenCount: 0, presentPct: null })
+      return
+    }
     let cancelled = false
+    setAggregate({ childrenCount: null, presentPct: null }) // "…" durante il ricalcolo
 
     async function compute() {
       let childrenCount = 0
@@ -48,7 +57,6 @@ export function useAdminStats(
         )
         childrenCount += childrenSnap.size
 
-        // Presenza di oggi: leggo attendance/{today} per ciascun bambino
         for (const child of childrenSnap.docs) {
           const attSnap = await getDocs(
             collection(db, 'schools', schoolId!, 'classes', cls.id, 'children', child.id, 'attendance'),
@@ -59,16 +67,10 @@ export function useAdminStats(
         }
       }
 
-      // Operatori attivi: uid distinti presenti negli operatorIds di tutte le classi
-      const operatorIds = new Set<string>()
-      classes.forEach((c) => c.operatorIds?.forEach((id) => operatorIds.add(id)))
-
       if (!cancelled) {
-        setStats({
-          classCount: classes.length,
+        setAggregate({
           childrenCount,
           presentPct: childrenCount > 0 ? Math.round((presentCount / childrenCount) * 100) : null,
-          operatorCount: operatorIds.size,
         })
       }
     }
@@ -79,5 +81,5 @@ export function useAdminStats(
     }
   }, [schoolId, classes, refreshKey])
 
-  return stats
+  return { classCount, childrenCount: aggregate.childrenCount, presentPct: aggregate.presentPct, operatorCount }
 }
