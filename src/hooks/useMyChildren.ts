@@ -20,6 +20,9 @@ export function useMyChildren(email: string | undefined) {
 
   useEffect(() => {
     if (!email) return
+    // Reset al cambio utente: non mostrare i figli del genitore precedente
+    setChildren([])
+    setLoading(true)
     const q = query(
       collectionGroup(db, 'children'),
       where('parentEmails', 'array-contains', email.toLowerCase()),

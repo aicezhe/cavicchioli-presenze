@@ -21,6 +21,9 @@ export function useOperatoreClasses(uid: string | undefined) {
 
   useEffect(() => {
     if (!uid) return
+    // Reset al cambio utente: non mostrare le classi dell'operatore precedente
+    setClasses([])
+    setLoading(true)
     const q = query(collectionGroup(db, 'classes'), where('operatorIds', 'array-contains', uid))
     const unsub = onSnapshot(
       q,

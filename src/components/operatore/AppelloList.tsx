@@ -40,8 +40,8 @@ export default function AppelloList({ schoolId, classId, operatoreUid, session, 
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-0.5">
+      <div className="space-y-2">
+        <div className="flex items-center justify-center gap-0.5">
           {/* Settimana precedente (−7 giorni) */}
           <button
             onClick={() => setDate((d) => shiftIso(d, -7))}
@@ -89,8 +89,8 @@ export default function AppelloList({ schoolId, classId, operatoreUid, session, 
           </button>
         </div>
 
-        {/* Progresso: quanti segnati presenti */}
-        <p className="text-sm font-medium" style={{ color }}>
+        {/* Progresso centrato: quanti segnati presenti */}
+        <p className="text-sm font-medium text-center" style={{ color }}>
           {presentCount} / {children.length} presenti
         </p>
       </div>
