@@ -4,7 +4,8 @@ import AppHeader from '../components/AppHeader'
 import type { Role } from '../types'
 import { ROLE_LABELS } from '../types'
 
-const ROLES: Role[] = ['admin', 'operatore', 'genitore']
+// Genitore al centro: sono gli utenti principali della piattaforma
+const ROLES: Role[] = ['admin', 'genitore', 'operatore']
 
 // Link che framer-motion sa animare come un proprio componente
 const MotionLink = motion.create(Link)
