@@ -81,8 +81,9 @@ export default function OperatoriSection({ classes, onToggle }: OperatoriSection
       <Modal open={showAdd} title="Nuovo operatore" onClose={() => setShowAdd(false)}>
         <AddUserForm
           submitLabel="Crea operatore"
-          onSubmit={async (name, email, password) => {
-            await provisionUser('operatore', name, email, password)
+          withPhone
+          onSubmit={async (name, email, password, phone) => {
+            await provisionUser('operatore', name, email, password, phone)
           }}
           onDone={() => setShowAdd(false)}
         />

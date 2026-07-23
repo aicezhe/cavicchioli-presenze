@@ -55,8 +55,11 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      // Ognuno vede il proprio profilo, l'admin vede tutti (serve per assegnare gli operatori)
-      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      // Ognuno vede il proprio profilo; l'admin vede tutti; i profili OPERATORE sono
+      // leggibili da qualsiasi utente autenticato (rubrica contatti per i genitori:
+      // nome, email, telefono). Le altre info restano riservate.
+      allow read: if signedIn()
+        && (request.auth.uid == uid || isAdmin() || resource.data.role == 'operatore');
 
       // Nessuna auto-registrazione: gli account sono creati dalla scuola (il direttore
       // consegna le credenziali). Profili e ruoli li gestisce solo l'admin.

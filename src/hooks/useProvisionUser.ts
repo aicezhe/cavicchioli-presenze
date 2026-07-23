@@ -19,7 +19,7 @@ import type { Role } from '../types'
  */
 export function useProvisionUser() {
   const provisionUser = useCallback(
-    async (role: Role, name: string, email: string, password: string) => {
+    async (role: Role, name: string, email: string, password: string, phone?: string) => {
       // Nome univoco per non collidere con l'app principale né con provisioning concorrenti
       const secondary = initializeApp(firebaseConfig, `provision-${Date.now()}`)
       try {
@@ -32,6 +32,8 @@ export function useProvisionUser() {
           role,
           name: name.trim(),
           email: email.trim().toLowerCase(),
+          // Telefono solo se indicato (evita campi vuoti nel documento)
+          ...(phone?.trim() ? { phone: phone.trim() } : {}),
         })
         return cred.user.uid
       } finally {

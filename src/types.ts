@@ -13,6 +13,8 @@ export type UserProfile = {
   role: Role
   name: string
   email: string
+  /** Telefono di contatto (usato per gli operatori nella rubrica dei genitori) */
+  phone?: string
 }
 
 export type School = {

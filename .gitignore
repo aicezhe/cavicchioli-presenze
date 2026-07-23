@@ -25,3 +25,6 @@ dist-ssr
 
 # Chiavi Firebase locali
 .env
+
+# Firebase CLI cache
+.firebase/

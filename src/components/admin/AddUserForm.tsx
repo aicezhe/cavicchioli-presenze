@@ -4,9 +4,11 @@ import { FirebaseError } from 'firebase/app'
 
 type AddUserFormProps = {
   /** Crea l'utente; deve rifiutare l'errore per mostrarne il messaggio */
-  onSubmit: (name: string, email: string, password: string) => Promise<void>
+  onSubmit: (name: string, email: string, password: string, phone: string) => Promise<void>
   onDone: () => void
   submitLabel: string
+  /** Mostra il campo telefono (utile per gli operatori: rubrica dei genitori) */
+  withPhone?: boolean
 }
 
 const inputClass =
@@ -23,10 +25,11 @@ function errorMessage(err: unknown): string {
 }
 
 /** Form condiviso per creare un account (operatore/genitore/amministratore). */
-export default function AddUserForm({ onSubmit, onDone, submitLabel }: AddUserFormProps) {
+export default function AddUserForm({ onSubmit, onDone, submitLabel, withPhone }: AddUserFormProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [phone, setPhone] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -35,7 +38,7 @@ export default function AddUserForm({ onSubmit, onDone, submitLabel }: AddUserFo
     setError(null)
     setSaving(true)
     try {
-      await onSubmit(name, email, password)
+      await onSubmit(name, email, password, phone)
       onDone()
     } catch (err) {
       console.error(err)
@@ -54,6 +57,18 @@ export default function AddUserForm({ onSubmit, onDone, submitLabel }: AddUserFo
         <span className="text-sm font-medium">Email</span>
         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
       </label>
+      {withPhone && (
+        <label className="block">
+          <span className="text-sm font-medium">Telefono</span>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={inputClass}
+            placeholder="opzionale — visibile ai genitori"
+          />
+        </label>
+      )}
       <label className="block">
         <span className="text-sm font-medium">Password iniziale</span>
         <input
