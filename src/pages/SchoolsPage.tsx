@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useSchools } from '../hooks/useSchools'
-import { PlatformCrest } from '../components/PlatformCrest'
 import Crest from '../components/Crest'
 import { schoolColor, schoolInitials } from '../types'
 
@@ -23,7 +22,6 @@ export default function SchoolsPage() {
         <div className="mx-auto max-w-4xl px-4 py-4 flex items-center justify-center">
           <Link to="/" className="flex items-center gap-2">
             <span className="font-serif text-xl font-semibold tracking-wide text-ink">NOTA</span>
-            <PlatformCrest variant="icon" size={26} />
           </Link>
         </div>
       </header>
@@ -78,7 +76,7 @@ export default function SchoolsPage() {
                              shadow-sm hover:shadow-xl transition-[background-color,box-shadow] duration-200"
                 >
                   <Crest size={52} variant="compact" color={color} initials={schoolInitials(school)} />
-                  <span className="font-serif text-lg font-semibold text-ink">{school.name}</span>
+                  <span className="font-serif text-xl sm:text-2xl font-semibold text-ink">{school.name}</span>
                 </motion.button>
               )
             })}
