@@ -1,101 +1,77 @@
-// Эмблема платформы NOTA
-// variant="full" — полный щит с текстом NOTA (для landing, крупных заголовков)
-// variant="compact" — круглая версия (favicon, avatar, маленькие места в UI)
-// variant="icon" — только щит с галочкой, без текста (для очень мелких размеров)
+// Emblema della piattaforma NOTA: scudo con dentro uno scudetto araldico
+// inquartato (diviso in 4 da una croce) e la scritta "NOTA".
+// Il colore delle linee/testo è parametrizzato: bianco (crema) su fondo scuro,
+// scuro (ink) su fondo chiaro. Lo scudetto interno resta dusty-blue (accento).
 
-type CrestVariant = 'full' | 'compact' | 'icon';
+type CrestVariant = 'full' | 'compact' | 'icon'
 
-interface PlatformCrestProps {
-  variant?: CrestVariant;
-  size?: number;
+type PlatformCrestProps = {
+  variant?: CrestVariant
+  size?: number
+  /** Colore di linee e testo. Default: ink (per fondi chiari) */
+  color?: string
 }
 
-export function PlatformCrest({ variant = 'full', size = 60 }: PlatformCrestProps) {
-  if (variant === 'compact') {
-    return (
-      <svg width={size} height={size} viewBox="0 0 140 140">
-        <circle cx="70" cy="70" r="66" fill="#1A1817" stroke="#6E859C" strokeWidth="2" />
-        <circle cx="70" cy="70" r="56" fill="none" stroke="#6E859C" strokeWidth="0.75" />
-        <path
-          d="M50 70 L64 84 L92 50"
-          stroke="#6E859C"
-          strokeWidth="8"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+const DUSTYBLUE = '#6E859C'
+const INK = '#1A1817'
+
+export function PlatformCrest({ variant = 'full', size = 60, color = INK }: PlatformCrestProps) {
+  const isFull = variant === 'full'
+  // full include la scritta NOTA; le altre varianti mostrano solo lo scudo
+  const viewBox = isFull ? '0 0 120 152' : '9 4 102 138'
+  const ratio = isFull ? 120 / 152 : 102 / 138
+
+  return (
+    <svg
+      width={size * ratio}
+      height={size}
+      viewBox={viewBox}
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="Emblema della piattaforma NOTA"
+    >
+      {/* Scudo esterno: doppio bordo */}
+      <path
+        d="M14 8 H106 V72 C106 106 84 126 60 138 C36 126 14 106 14 72 Z"
+        fill="none"
+        stroke={color}
+        strokeWidth="3.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20 14 H100 V71 C100 100 81 118 60 129 C39 118 20 100 20 71 Z"
+        fill="none"
+        stroke={color}
+        strokeWidth="1"
+        opacity="0.6"
+        strokeLinejoin="round"
+      />
+
+      {/* Scudetto araldico interno, inquartato */}
+      <path
+        d="M43 30 H77 V56 C77 72 69 80 60 86 C51 80 43 72 43 56 Z"
+        fill={DUSTYBLUE}
+        stroke={color}
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <line x1="60" y1="30" x2="60" y2="86" stroke={color} strokeWidth="2" />
+      <line x1="43" y1="57" x2="77" y2="57" stroke={color} strokeWidth="2" />
+
+      {isFull && (
         <text
-          x="70"
-          y="112"
+          x="60"
+          y="118"
           textAnchor="middle"
-          fontFamily="Inter, Arial, sans-serif"
-          fontSize="9"
-          letterSpacing="3"
-          fill="#F8F6F2"
+          fill={color}
+          fontFamily="Lora, Georgia, serif"
+          fontWeight="600"
+          fontSize="17"
+          letterSpacing="2"
         >
           NOTA
         </text>
-      </svg>
-    );
-  }
-
-  if (variant === 'icon') {
-    return (
-      <svg width={size} height={size * (170 / 150)} viewBox="0 0 150 170">
-        <path
-          d="M75 4 L138 26 V88 C138 124 112 154 75 168 C38 154 12 124 12 88 V26 Z"
-          fill="#1A1817"
-          stroke="#6E859C"
-          strokeWidth="4"
-        />
-        <path
-          d="M55 82 L70 98 L98 60"
-          stroke="#6E859C"
-          strokeWidth="12"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
-  // variant === 'full'
-  return (
-    <svg width={size} height={size * (170 / 150)} viewBox="0 0 150 170">
-      <path
-        d="M75 4 L138 26 V88 C138 124 112 154 75 168 C38 154 12 124 12 88 V26 Z"
-        fill="#1A1817"
-        stroke="#6E859C"
-        strokeWidth="2.5"
-      />
-      <path
-        d="M75 12 L130 31 V88 C130 118 108 144 75 157 C42 144 20 118 20 88 V31 Z"
-        fill="none"
-        stroke="#6E859C"
-        strokeWidth="0.75"
-        opacity="0.5"
-      />
-      <path
-        d="M55 82 L70 98 L98 60"
-        stroke="#6E859C"
-        strokeWidth="9"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <text
-        x="75"
-        y="135"
-        textAnchor="middle"
-        fontFamily="Lora, Georgia, serif"
-        fontWeight="700"
-        fontSize="15"
-        fill="#F8F6F2"
-        letterSpacing="1"
-      >
-        NOTA
-      </text>
+      )}
     </svg>
-  );
+  )
 }

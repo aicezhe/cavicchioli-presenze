@@ -11,7 +11,7 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col bg-ink">
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         {/* Emblema piattaforma + sottotitolo */}
-        <PlatformCrest variant="full" size={120} />
+        <PlatformCrest variant="full" size={128} color="#F8F6F2" />
         <p className="mt-3 text-sm text-cream/70 font-sans">
           Piattaforma presenze scolastiche
         </p>

@@ -58,7 +58,7 @@ export default function AppHeader({ centered, tools, onSearchClick, right, menu,
         }
       >
         {/* Default piattaforma NOTA (le cabine passano emblema/nome della loro scuola) */}
-        {emblem ?? <PlatformCrest variant="icon" size={30} />}
+        {emblem ?? <PlatformCrest variant="icon" size={30} color="#F8F6F2" />}
         <span className="font-serif text-xl font-semibold">{title ?? 'NOTA'}</span>
 
         {!centered && (
