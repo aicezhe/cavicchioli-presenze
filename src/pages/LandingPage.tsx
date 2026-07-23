@@ -48,10 +48,10 @@ export default function LandingPage() {
               <span className="font-medium text-lg text-ink transition-colors group-hover:text-cream">
                 {ROLE_LABELS[role]}
               </span>
-              {/* Cerchio con freccia: riempimento oro translucido; all'hover diventa crema */}
+              {/* Cerchio con freccia: freccia nera, riempimento oro translucido; all'hover crema */}
               <span
                 className="grid shrink-0 place-items-center w-9 h-9 rounded-full
-                           border-2 border-gold bg-gold/20 text-crimson transition-colors
+                           border-2 border-gold bg-gold/20 text-ink transition-colors
                            group-hover:border-cream group-hover:bg-cream/20 group-hover:text-cream"
                 aria-hidden="true"
               >

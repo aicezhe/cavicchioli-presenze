@@ -5,8 +5,10 @@ import Crest from './Crest'
 type AppHeaderProps = {
   /** landing: scudo + nome centrati, senza strumenti */
   centered?: boolean
-  /** cabinet: mostra ricerca + menu hamburger accanto al contenuto a destra */
+  /** cabinet: mostra il menu hamburger accanto al contenuto a destra */
   tools?: boolean
+  /** cabinet: se fornito, mostra il pulsante di ricerca che invoca questa callback */
+  onSearchClick?: () => void
   /** cabinet: contenuto extra a destra (opzionale) */
   right?: ReactNode
   /** cabinet: contenuto del menu hamburger (riceve una funzione per chiuderlo) */
@@ -34,7 +36,7 @@ function MenuIcon() {
 
 /** Intestazione condivisa: scudo + nome scuola su fondo bordeaux con linea dorata.
     centered → landing; altrimenti cabina con ricerca e menu hamburger (impostazioni, logout). */
-export default function AppHeader({ centered, tools, right, menu }: AppHeaderProps) {
+export default function AppHeader({ centered, tools, onSearchClick, right, menu }: AppHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
 
@@ -51,8 +53,12 @@ export default function AppHeader({ centered, tools, right, menu }: AppHeaderPro
 
         {!centered && (
           <div className="ml-auto flex items-center gap-4">
-            {tools && (
-              <button aria-label="Cerca" className="opacity-80 hover:opacity-100 transition-opacity">
+            {onSearchClick && (
+              <button
+                aria-label="Cerca"
+                onClick={onSearchClick}
+                className="opacity-80 hover:opacity-100 transition-opacity"
+              >
                 <SearchIcon />
               </button>
             )}

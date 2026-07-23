@@ -6,12 +6,14 @@ import { useAuth } from '../../context/AuthContext'
 import { useSchool } from '../../hooks/useSchool'
 import { useClasses } from '../../hooks/useClasses'
 import { useAdminStats } from '../../hooks/useAdminStats'
+import { useAllChildren } from '../../hooks/useAllChildren'
 import AppHeader from '../../components/AppHeader'
 import StatsCards from '../../components/admin/StatsCards'
 import ClassiSection from '../../components/admin/ClassiSection'
 import OperatoriSection from '../../components/admin/OperatoriSection'
 import GenitoriSection from '../../components/admin/GenitoriSection'
 import ImpostazioniSection from '../../components/admin/ImpostazioniSection'
+import SearchModal from '../../components/admin/SearchModal'
 
 // Impostazioni non è una scheda: si apre dal menu hamburger
 const TABS = [
@@ -25,6 +27,8 @@ export default function AdminDashboard() {
   const { user, profile } = useAuth()
   const { school, loading: schoolLoading, createSchool, updateSchoolName } = useSchool(user?.uid)
   const { classes, addClass, removeClass, setOperator } = useClasses(school?.id)
+  // Tutti i bambini della scuola: condivisi tra ricerca e sezione Genitori (niente listener doppi)
+  const { children: allChildren, setParentLink } = useAllChildren(school?.id, classes)
   // I totali (bambini, presenze) sono calcolati con getDocs: li ricalcolo cambiando questa chiave
   const [statsKey, setStatsKey] = useState(0)
   const stats = useAdminStats(school?.id, classes, statsKey)
@@ -32,6 +36,16 @@ export default function AdminDashboard() {
 
   const [tab, setTab] = useState<TabKey>('classi')
   const [newSchoolName, setNewSchoolName] = useState('')
+
+  // Ricerca + salto a una classe (apre la scheda Classi ed espande la classe)
+  const [showSearch, setShowSearch] = useState(false)
+  const [openClassId, setOpenClassId] = useState<string | null>(null)
+  const [openNonce, setOpenNonce] = useState(0)
+  const goToClass = (classId: string) => {
+    setTab('classi')
+    setOpenClassId(classId)
+    setOpenNonce((n) => n + 1)
+  }
 
   // Contenuto del menu hamburger: profilo + impostazioni + logout
   const headerMenu = (close: () => void) => (
@@ -95,7 +109,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader tools menu={headerMenu} />
+      <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-4 py-8 space-y-8">
         <div>
@@ -134,18 +148,29 @@ export default function AdminDashboard() {
             removeClass={removeClass}
             onToggleOperator={setOperator}
             onDataChange={refreshStats}
+            openClassId={openClassId}
+            openNonce={openNonce}
           />
         )}
         {tab === 'operatori' && (
           <OperatoriSection classes={classes} onToggle={setOperator} />
         )}
-        {school && tab === 'genitori' && (
-          <GenitoriSection schoolId={school.id} classes={classes} />
+        {tab === 'genitori' && (
+          <GenitoriSection children={allChildren} setParentLink={setParentLink} />
         )}
         {school && tab === 'impostazioni' && (
           <ImpostazioniSection school={school} updateSchoolName={updateSchoolName} />
         )}
       </main>
+
+      {/* Ricerca globale: classi e bambini */}
+      <SearchModal
+        open={showSearch}
+        onClose={() => setShowSearch(false)}
+        classes={classes}
+        children={allChildren}
+        onGoToClass={goToClass}
+      />
     </div>
   )
 }

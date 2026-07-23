@@ -11,6 +11,9 @@ type ClassiSectionProps = {
   removeClass: (classId: string) => Promise<void>
   onToggleOperator: (classId: string, operatorUid: string, assigned: boolean) => Promise<void>
   onDataChange: () => void
+  /** Classe da aprire (dalla ricerca) e nonce per riattivare l'apertura */
+  openClassId?: string | null
+  openNonce?: number
 }
 
 /** Sezione "Classi": elenco delle classi come accordion + creazione nuova classe. */
@@ -21,6 +24,8 @@ export default function ClassiSection({
   removeClass,
   onToggleOperator,
   onDataChange,
+  openClassId,
+  openNonce,
 }: ClassiSectionProps) {
   const [showNewClass, setShowNewClass] = useState(false)
   const [newClassName, setNewClassName] = useState('')
@@ -61,6 +66,7 @@ export default function ClassiSection({
               }}
               onToggleOperator={onToggleOperator}
               onDataChange={onDataChange}
+              openSignal={openClassId === cls.id ? openNonce : undefined}
             />
           ))}
         </div>

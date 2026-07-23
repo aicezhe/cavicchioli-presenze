@@ -1,11 +1,15 @@
 import { useUsersByRole } from '../../hooks/useUsersByRole'
-import { useAllChildren } from '../../hooks/useAllChildren'
 import type { ChildWithClass } from '../../hooks/useAllChildren'
-import type { SchoolClass, WithId } from '../../types'
 
 type GenitoriSectionProps = {
-  schoolId: string
-  classes: WithId<SchoolClass>[]
+  children: ChildWithClass[]
+  setParentLink: (
+    classId: string,
+    childId: string,
+    email: string,
+    parentUid: string | undefined,
+    link: boolean,
+  ) => Promise<void>
 }
 
 const sameEmail = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase()
@@ -13,10 +17,10 @@ const sameEmail = (a: string, b: string) => a.trim().toLowerCase() === b.trim().
 /**
  * Vista d'insieme sui genitori: a quali bambini sono collegati (via parentEmails).
  * L'admin può verificare e correggere il collegamento genitore-bambino.
+ * I bambini arrivano dal dashboard (condivisi con la ricerca) per evitare listener doppi.
  */
-export default function GenitoriSection({ schoolId, classes }: GenitoriSectionProps) {
+export default function GenitoriSection({ children, setParentLink }: GenitoriSectionProps) {
   const parents = useUsersByRole('genitore')
-  const { children, setParentLink } = useAllChildren(schoolId, classes)
 
   const childrenOf = (email: string): ChildWithClass[] =>
     children.filter((c) => (c.parentEmails ?? []).some((pe) => sameEmail(pe, email)))

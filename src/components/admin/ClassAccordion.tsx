@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useChildren } from '../../hooks/useChildren'
 import { useOperators } from '../../hooks/useOperators'
@@ -13,6 +13,8 @@ type ClassAccordionProps = {
   onRemoveClass: (classId: string) => void
   onToggleOperator: (classId: string, operatorUid: string, assigned: boolean) => Promise<void>
   onDataChange: () => void
+  /** Se cambia a un valore > 0, apre l'accordion (usato dalla ricerca per saltare qui) */
+  openSignal?: number
 }
 
 // Formatta una data ISO in gg/mm/aaaa per la UI
@@ -27,8 +29,14 @@ export default function ClassAccordion({
   onRemoveClass,
   onToggleOperator,
   onDataChange,
+  openSignal,
 }: ClassAccordionProps) {
   const [open, setOpen] = useState(false)
+
+  // La ricerca chiede di aprire questa classe
+  useEffect(() => {
+    if (openSignal) setOpen(true)
+  }, [openSignal])
   const [showAddChild, setShowAddChild] = useState(false)
   const [showAssign, setShowAssign] = useState(false)
   const { children, addChild, removeChild } = useChildren(schoolId, open ? cls.id : undefined)
