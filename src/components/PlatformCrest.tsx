@@ -61,13 +61,13 @@ export function PlatformCrest({ variant = 'full', size = 60, color = INK }: Plat
       {isFull && (
         <text
           x="60"
-          y="118"
+          y="110"
           textAnchor="middle"
           fill={color}
           fontFamily="Lora, Georgia, serif"
           fontWeight="600"
-          fontSize="17"
-          letterSpacing="2"
+          fontSize="14"
+          letterSpacing="1.5"
         >
           NOTA
         </text>
