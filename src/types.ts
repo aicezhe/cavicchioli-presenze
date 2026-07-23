@@ -29,6 +29,16 @@ export type School = {
 /** Colore di default della piattaforma quando la scuola non ne ha uno */
 export const DEFAULT_SCHOOL_COLOR = '#6E859C'
 
+/** Palette pronta per la scelta del colore scuola (niente picker libero) */
+export const SCHOOL_COLORS: { name: string; value: string }[] = [
+  { name: 'Blu polvere', value: '#6E859C' },
+  { name: 'Terracotta', value: '#B5654A' },
+  { name: 'Verde bosco', value: '#4F7060' },
+  { name: 'Prugna', value: '#7A5C7E' },
+  { name: 'Ocra', value: '#B08A3E' },
+  { name: 'Ardesia', value: '#55606E' },
+]
+
 /** Colore effettivo della scuola (con fallback) */
 export function schoolColor(s: Pick<School, 'primaryColor'>): string {
   return s.primaryColor || DEFAULT_SCHOOL_COLOR

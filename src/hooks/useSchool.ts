@@ -12,13 +12,18 @@ import {
 import { db } from '../lib/firebase'
 import type { School, WithId } from '../types'
 
+export type NewSchoolData = {
+  name: string
+  primaryColor?: string
+  emblemInitials?: string
+}
+
 /**
- * Trova la scuola gestita dall'admin corrente: schools dove il suo uid è in adminIds.
- * onSnapshot così, appena l'admin crea la scuola (bootstrap), la UI si aggiorna da sola
- * senza dover rileggere manualmente.
+ * TUTTE le scuole gestite dall'admin corrente (adminIds array-contains uid), in tempo reale.
+ * Un admin può gestire più scuole: la dashboard sceglie quale è attiva.
  */
-export function useSchool(uid: string | undefined) {
-  const [school, setSchool] = useState<WithId<School> | null>(null)
+export function useMySchools(uid: string | undefined) {
+  const [schools, setSchools] = useState<WithId<School>[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -27,43 +32,45 @@ export function useSchool(uid: string | undefined) {
     const unsub = onSnapshot(
       q,
       (snap) => {
-        // Un admin gestisce (per questo progetto) una scuola: prendiamo la prima
-        const first = snap.docs[0]
-        setSchool(first ? ({ id: first.id, ...(first.data() as School) }) : null)
+        const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as School) }))
+        list.sort((a, b) => a.name.localeCompare(b.name, 'it'))
+        setSchools(list)
         setLoading(false)
       },
       (err) => {
-        console.error('Impossibile caricare la scuola:', err)
+        console.error('Impossibile caricare le scuole:', err)
         setLoading(false)
       },
     )
     return unsub
   }, [uid])
 
-  // Crea la scuola includendo l'admin in adminIds (richiesto dalle regole)
+  // Crea la scuola includendo l'admin in adminIds (richiesto dalle regole). Ritorna il nuovo id.
   const createSchool = useCallback(
-    async (name: string) => {
+    async (data: NewSchoolData): Promise<string | undefined> => {
       if (!uid) return
-      await addDoc(collection(db, 'schools'), {
-        name: name.trim(),
+      const initials = data.emblemInitials?.trim().toUpperCase()
+      const ref = await addDoc(collection(db, 'schools'), {
+        name: data.name.trim(),
         adminIds: [uid],
+        // Campi opzionali solo se valorizzati (Firestore non accetta undefined)
+        ...(data.primaryColor ? { primaryColor: data.primaryColor } : {}),
+        ...(initials ? { emblemInitials: initials } : {}),
       })
+      return ref.id
     },
     [uid],
   )
 
   // Rinomina la scuola (sezione Impostazioni)
-  const updateSchoolName = useCallback(
-    async (schoolId: string, name: string) => {
-      await updateDoc(doc(db, 'schools', schoolId), { name: name.trim() })
-    },
-    [],
-  )
-
-  // Aggiunge un uid agli amministratori della scuola
-  const addSchoolAdmin = useCallback(async (schoolId: string, uid: string) => {
-    await updateDoc(doc(db, 'schools', schoolId), { adminIds: arrayUnion(uid) })
+  const updateSchoolName = useCallback(async (schoolId: string, name: string) => {
+    await updateDoc(doc(db, 'schools', schoolId), { name: name.trim() })
   }, [])
 
-  return { school, loading, createSchool, updateSchoolName, addSchoolAdmin }
+  // Aggiunge un uid agli amministratori della scuola
+  const addSchoolAdmin = useCallback(async (schoolId: string, adminUid: string) => {
+    await updateDoc(doc(db, 'schools', schoolId), { adminIds: arrayUnion(adminUid) })
+  }, [])
+
+  return { schools, loading, createSchool, updateSchoolName, addSchoolAdmin }
 }

@@ -1,19 +1,22 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../context/AuthContext'
-import { useSchool } from '../../hooks/useSchool'
+import { useMySchools } from '../../hooks/useSchool'
 import { useClasses } from '../../hooks/useClasses'
 import { useAdminStats } from '../../hooks/useAdminStats'
 import { useAllChildren } from '../../hooks/useAllChildren'
 import AppHeader from '../../components/AppHeader'
+import Crest from '../../components/Crest'
 import StatsCards from '../../components/admin/StatsCards'
 import ClassiSection from '../../components/admin/ClassiSection'
 import OperatoriSection from '../../components/admin/OperatoriSection'
 import GenitoriSection from '../../components/admin/GenitoriSection'
 import ImpostazioniSection from '../../components/admin/ImpostazioniSection'
 import SearchModal from '../../components/admin/SearchModal'
+import Modal from '../../components/admin/Modal'
+import NewSchoolForm from '../../components/admin/NewSchoolForm'
+import { schoolColor, schoolInitials } from '../../types'
 
 // Impostazioni non è una scheda: si apre dal menu hamburger
 const TABS = [
@@ -25,20 +28,30 @@ type TabKey = (typeof TABS)[number]['key'] | 'impostazioni'
 
 export default function AdminDashboard() {
   const { user, profile } = useAuth()
-  const { school, loading: schoolLoading, createSchool, updateSchoolName, addSchoolAdmin } =
-    useSchool(user?.uid)
+  const { schools, loading: schoolsLoading, createSchool, updateSchoolName, addSchoolAdmin } =
+    useMySchools(user?.uid)
+
+  // Scuola attiva: le sezioni (classi, statistiche, ecc.) reagiscono a questo id
+  const [activeSchoolId, setActiveSchoolId] = useState<string | null>(null)
+  useEffect(() => {
+    if (schools.length === 0) {
+      setActiveSchoolId(null)
+    } else if (!activeSchoolId || !schools.some((s) => s.id === activeSchoolId)) {
+      setActiveSchoolId(schools[0].id)
+    }
+  }, [schools, activeSchoolId])
+  const school = schools.find((s) => s.id === activeSchoolId) ?? null
+
   const { classes, addClass, removeClass, setOperator } = useClasses(school?.id)
-  // Tutti i bambini della scuola: condivisi tra ricerca e sezione Genitori (niente listener doppi)
   const { children: allChildren, setParentLink } = useAllChildren(school?.id, classes)
-  // I totali (bambini, presenze) sono calcolati con getDocs: li ricalcolo cambiando questa chiave
   const [statsKey, setStatsKey] = useState(0)
   const stats = useAdminStats(school?.id, classes, statsKey)
   const refreshStats = () => setStatsKey((k) => k + 1)
 
   const [tab, setTab] = useState<TabKey>('classi')
-  const [newSchoolName, setNewSchoolName] = useState('')
+  const [showNewSchool, setShowNewSchool] = useState(false)
 
-  // Ricerca + salto a una classe (apre la scheda Classi ed espande la classe)
+  // Ricerca + salto a una classe
   const [showSearch, setShowSearch] = useState(false)
   const [openClassId, setOpenClassId] = useState<string | null>(null)
   const [openNonce, setOpenNonce] = useState(0)
@@ -48,10 +61,9 @@ export default function AdminDashboard() {
     setOpenNonce((n) => n + 1)
   }
 
-  // Contenuto del menu hamburger: profilo + impostazioni + logout
   const headerMenu = (close: () => void) => (
     <>
-      <div className="px-4 py-2 border-b border-dustyblue/20">
+      <div className="px-4 py-2 border-b border-black/10">
         <p className="text-sm font-medium">{profile?.name}</p>
         <p className="text-xs text-warmgray truncate">{profile?.email}</p>
       </div>
@@ -73,55 +85,65 @@ export default function AdminDashboard() {
     </>
   )
 
-  // Bootstrap: l'admin non ha ancora una scuola → schermata di creazione
-  if (!schoolLoading && !school) {
-    async function handleCreateSchool(e: FormEvent) {
-      e.preventDefault()
-      await createSchool(newSchoolName)
-    }
+  // Bootstrap: nessuna scuola → schermata di creazione della prima scuola
+  if (!schoolsLoading && schools.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
         <AppHeader tools menu={headerMenu} />
         <main className="flex-1 flex items-center justify-center px-4">
-          <form onSubmit={handleCreateSchool} className="w-full max-w-sm bg-white rounded-xl border border-dustyblue/40 p-6 sm:p-8">
-            <h1 className="font-serif text-xl font-semibold text-dustyblue">Crea la tua scuola</h1>
-            <p className="mt-1 text-sm text-warmgray">
-              Per iniziare, dai un nome alla scuola che gestirai.
+          <div className="w-full max-w-sm bg-white rounded-xl border border-black/10 p-6 sm:p-8">
+            <h1 className="font-serif text-xl font-semibold text-dustyblue text-center">Crea la tua scuola</h1>
+            <p className="mt-1 mb-4 text-sm text-warmgray text-center">
+              Per iniziare, crea la scuola che gestirai.
             </p>
-            <input
-              required
-              value={newSchoolName}
-              onChange={(e) => setNewSchoolName(e.target.value)}
-              placeholder='Es. Scuola Secondaria "Giacomo Cavicchioli"'
-              className="mt-4 w-full rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2.5
-                         focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
-            />
-            <button
-              type="submit"
-              className="mt-5 w-full rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity"
-            >
-              Crea scuola
-            </button>
-          </form>
+            <NewSchoolForm onSubmit={async (data) => void (await createSchool(data))} />
+          </div>
         </main>
       </div>
     )
   }
+
+  const color = school ? schoolColor(school) : '#6E859C'
 
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-4 py-8 space-y-8">
+        {/* Le mie scuole: emblema + selettore scuola attiva + nuova scuola */}
         <div>
-          <h1 className="font-serif text-2xl font-semibold">{school?.name}</h1>
-          <p className="text-sm text-warmgray">Pannello amministratore</p>
+          <div className="flex items-center gap-3 flex-wrap">
+            {school && (
+              <Crest size={32} variant="compact" color={color} initials={schoolInitials(school)} />
+            )}
+            {schools.length > 1 ? (
+              <select
+                value={activeSchoolId ?? ''}
+                onChange={(e) => setActiveSchoolId(e.target.value)}
+                className="rounded-lg border border-black/15 bg-white px-3 py-2 text-lg font-serif font-semibold
+                           focus:outline-none focus:ring-2 focus:ring-black/20"
+              >
+                {schools.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            ) : (
+              <h1 className="font-serif text-2xl font-semibold">{school?.name}</h1>
+            )}
+            <button
+              onClick={() => setShowNewSchool(true)}
+              className="ml-auto rounded-lg border border-dustyblue px-3 py-1.5 text-sm text-dustyblue font-medium hover:bg-dustyblue/10 transition-colors"
+            >
+              + Nuova scuola
+            </button>
+          </div>
+          <p className="mt-1 text-sm text-warmgray">Pannello amministratore</p>
         </div>
 
         <StatsCards stats={stats} />
 
         {/* Barra delle sezioni */}
-        <div className="border-b border-dustyblue/30 overflow-x-auto">
+        <div className="border-b border-black/10 overflow-x-auto">
           <nav className="flex gap-1 min-w-max">
             {TABS.map((t) => (
               <button
@@ -176,6 +198,18 @@ export default function AdminDashboard() {
         children={allChildren}
         onGoToClass={goToClass}
       />
+
+      {/* Nuova scuola */}
+      <Modal open={showNewSchool} title="Nuova scuola" onClose={() => setShowNewSchool(false)}>
+        <NewSchoolForm
+          submitLabel="Crea scuola"
+          onSubmit={async (data) => {
+            const id = await createSchool(data)
+            if (id) setActiveSchoolId(id) // passa subito alla nuova scuola
+          }}
+          onDone={() => setShowNewSchool(false)}
+        />
+      </Modal>
     </div>
   )
 }
