@@ -6,34 +6,33 @@ type ChildAttendanceRowProps = {
   onToggle: (value: boolean) => void
 }
 
-/** Riga appello: nome del bambino + interruttore "presente" grande e comodo al tocco. */
+/** Riga appello: nome del bambino + casella "presente" grande e comoda al tocco.
+    Tutta la riga è cliccabile per segnare più velocemente. */
 export default function ChildAttendanceRow({ child, present, onToggle }: ChildAttendanceRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 bg-white rounded-xl border border-gold/40 px-4 py-3">
-      <div className="min-w-0">
-        <p className="font-medium truncate">
-          {child.lastName} <span className="text-warmgray">{child.firstName}</span>
-        </p>
-      </div>
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={present}
+      aria-label={`Presente: ${child.firstName} ${child.lastName}`}
+      onClick={() => onToggle(!present)}
+      className="w-full flex items-center justify-between gap-4 bg-white rounded-xl border border-gold/40 px-4 py-3 text-left hover:bg-cream/40 transition-colors"
+    >
+      <span className="min-w-0 font-medium truncate">
+        {child.lastName} <span className="text-warmgray">{child.firstName}</span>
+      </span>
 
-      {/* Interruttore presente/assente */}
-      <button
-        role="switch"
-        aria-checked={present}
-        aria-label={`Presente: ${child.firstName} ${child.lastName}`}
-        onClick={() => onToggle(!present)}
+      {/* Casella di spunta */}
+      <span
         className={
-          'relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors ' +
-          (present ? 'bg-crimson' : 'bg-warmgray/40')
+          'grid place-items-center w-7 h-7 shrink-0 rounded-md border-2 transition-colors ' +
+          (present ? 'bg-crimson border-crimson text-cream' : 'bg-white border-gold text-transparent')
         }
       >
-        <span
-          className={
-            'inline-block h-6 w-6 transform rounded-full bg-white shadow transition-transform ' +
-            (present ? 'translate-x-7' : 'translate-x-1')
-          }
-        />
-      </button>
-    </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </span>
+    </button>
   )
 }
