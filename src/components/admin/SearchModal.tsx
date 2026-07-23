@@ -7,7 +7,7 @@ type SearchModalProps = {
   open: boolean
   onClose: () => void
   classes: WithId<SchoolClass>[]
-  children: ChildWithClass[]
+  childrenList: ChildWithClass[]
   /** Vai a una classe (apre la scheda Classi ed espande la classe indicata) */
   onGoToClass: (classId: string) => void
 }
@@ -15,7 +15,7 @@ type SearchModalProps = {
 const norm = (s: string) => s.trim().toLowerCase()
 
 /** Ricerca rapida di una classe o di un bambino. Filtra i dati già caricati. */
-export default function SearchModal({ open, onClose, classes, children, onGoToClass }: SearchModalProps) {
+export default function SearchModal({ open, onClose, classes, childrenList, onGoToClass }: SearchModalProps) {
   const [q, setQ] = useState('')
   const query = norm(q)
 
@@ -26,12 +26,12 @@ export default function SearchModal({ open, onClose, classes, children, onGoToCl
   const childMatches = useMemo(
     () =>
       query
-        ? children.filter((c) =>
+        ? childrenList.filter((c) =>
             norm(`${c.firstName} ${c.lastName}`).includes(query) ||
             norm(`${c.lastName} ${c.firstName}`).includes(query),
           )
         : [],
-    [query, children],
+    [query, childrenList],
   )
 
   function goClass(classId: string) {

@@ -1,3 +1,4 @@
+import { DEFAULT_SCHOOL_COLOR } from '../../types'
 import type { OperatoreClass } from '../../hooks/useOperatoreClasses'
 
 type ClassSwitcherProps = {
@@ -9,7 +10,7 @@ type ClassSwitcherProps = {
 }
 
 /** Selettore di classe (solo quando l'operatore ne ha più di una): tab scorrevoli. */
-export default function ClassSwitcher({ classes, activeId, onSelect, color = '#6E859C' }: ClassSwitcherProps) {
+export default function ClassSwitcher({ classes, activeId, onSelect, color = DEFAULT_SCHOOL_COLOR }: ClassSwitcherProps) {
   return (
     <div className="border-b border-black/10 overflow-x-auto">
       <nav className="flex gap-1 min-w-max">

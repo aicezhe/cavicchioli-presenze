@@ -6,7 +6,7 @@ import AddUserForm from './AddUserForm'
 import type { ChildWithClass } from '../../hooks/useAllChildren'
 
 type GenitoriSectionProps = {
-  children: ChildWithClass[]
+  childrenList: ChildWithClass[]
   setParentLink: (
     classId: string,
     childId: string,
@@ -23,13 +23,13 @@ const sameEmail = (a: string, b: string) => a.trim().toLowerCase() === b.trim().
  * L'admin può creare un genitore, verificare e correggere il collegamento genitore-bambino.
  * I bambini arrivano dal dashboard (condivisi con la ricerca) per evitare listener doppi.
  */
-export default function GenitoriSection({ children, setParentLink }: GenitoriSectionProps) {
+export default function GenitoriSection({ childrenList, setParentLink }: GenitoriSectionProps) {
   const parents = useUsersByRole('genitore')
   const { provisionUser } = useProvisionUser()
   const [showAdd, setShowAdd] = useState(false)
 
   const childrenOf = (email: string): ChildWithClass[] =>
-    children.filter((c) => (c.parentEmails ?? []).some((pe) => sameEmail(pe, email)))
+    childrenList.filter((c) => (c.parentEmails ?? []).some((pe) => sameEmail(pe, email)))
 
   return (
     <section className="space-y-4">
@@ -52,7 +52,7 @@ export default function GenitoriSection({ children, setParentLink }: GenitoriSec
           {parents.map((parent) => {
             const linked = childrenOf(parent.email)
             const linkedIds = new Set(linked.map((c) => c.id))
-            const available = children.filter((c) => !linkedIds.has(c.id))
+            const available = childrenList.filter((c) => !linkedIds.has(c.id))
 
             return (
               <div key={parent.id} className="bg-white rounded-xl border border-dustyblue/40 px-5 py-4">

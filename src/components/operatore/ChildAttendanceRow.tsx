@@ -1,3 +1,4 @@
+import { DEFAULT_SCHOOL_COLOR } from '../../types'
 import type { Child, WithId } from '../../types'
 
 type ChildAttendanceRowProps = {
@@ -10,7 +11,7 @@ type ChildAttendanceRowProps = {
 
 /** Riga appello: nome del bambino + casella "presente" grande e comoda al tocco.
     Tutta la riga è cliccabile per segnare più velocemente. */
-export default function ChildAttendanceRow({ child, present, onToggle, color = '#6E859C' }: ChildAttendanceRowProps) {
+export default function ChildAttendanceRow({ child, present, onToggle, color = DEFAULT_SCHOOL_COLOR }: ChildAttendanceRowProps) {
   return (
     <button
       type="button"

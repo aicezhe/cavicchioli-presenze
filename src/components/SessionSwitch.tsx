@@ -1,5 +1,5 @@
 import type { Session } from '../types'
-import { SESSION_LABELS } from '../types'
+import { DEFAULT_SCHOOL_COLOR, SESSION_LABELS } from '../types'
 
 type SessionSwitchProps = {
   value: Session
@@ -11,7 +11,7 @@ type SessionSwitchProps = {
 const SESSIONS: Session[] = ['morning', 'evening']
 
 /** Interruttore fra le due sessioni di pre/post-scuola: Mattina / Pomeriggio. */
-export default function SessionSwitch({ value, onChange, color = '#6E859C' }: SessionSwitchProps) {
+export default function SessionSwitch({ value, onChange, color = DEFAULT_SCHOOL_COLOR }: SessionSwitchProps) {
   return (
     <div
       role="group"

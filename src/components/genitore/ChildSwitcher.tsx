@@ -1,19 +1,20 @@
+import { DEFAULT_SCHOOL_COLOR } from '../../types'
 import type { ParentChild } from '../../hooks/useMyChildren'
 
 type ChildSwitcherProps = {
-  children: ParentChild[]
+  childrenList: ParentChild[]
   activeId: string
   onSelect: (childId: string) => void
-  /** Colore della scuola per la tab attiva. Default: dusty-blue */
+  /** Colore della scuola per la tab attiva. Default: dusty-blue della piattaforma */
   color?: string
 }
 
 /** Selettore del figlio (solo se il genitore ha più di un bambino): tab scorrevoli. */
-export default function ChildSwitcher({ children, activeId, onSelect, color = '#6E859C' }: ChildSwitcherProps) {
+export default function ChildSwitcher({ childrenList, activeId, onSelect, color = DEFAULT_SCHOOL_COLOR }: ChildSwitcherProps) {
   return (
     <div className="border-b border-black/10 overflow-x-auto">
       <nav className="flex gap-1 min-w-max">
-        {children.map((c) => {
+        {childrenList.map((c) => {
           const active = activeId === c.id
           return (
             <button

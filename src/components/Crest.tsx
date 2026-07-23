@@ -12,6 +12,8 @@ type CrestProps = {
   className?: string
 }
 
+import { DEFAULT_SCHOOL_COLOR } from '../types'
+
 // Dettagli chiari, leggibili su qualunque colore di scudo
 const CREAM = '#F8F6F2'
 
@@ -23,7 +25,7 @@ const CREAM = '#F8F6F2'
 export default function Crest({
   size = 96,
   variant = 'full',
-  color = '#6E859C',
+  color = DEFAULT_SCHOOL_COLOR,
   initials = 'GC',
   motto = 'MDCCCLXXXII',
   className,

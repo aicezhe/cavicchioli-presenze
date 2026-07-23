@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useAppello, todayIso } from '../../hooks/useAppello'
 import ChildAttendanceRow from './ChildAttendanceRow'
+import { DEFAULT_SCHOOL_COLOR, SESSION_LABELS } from '../../types'
 import type { Session } from '../../types'
-import { SESSION_LABELS } from '../../types'
 
 type AppelloListProps = {
   schoolId: string
@@ -33,7 +33,7 @@ function dateLabel(iso: string): string {
 }
 
 /** Appello del giorno: data navigabile (frecce prec./succ.), progresso, elenco bambini. */
-export default function AppelloList({ schoolId, classId, operatoreUid, session, color = '#6E859C' }: AppelloListProps) {
+export default function AppelloList({ schoolId, classId, operatoreUid, session, color = DEFAULT_SCHOOL_COLOR }: AppelloListProps) {
   const [date, setDate] = useState(todayIso())
   const { children, present, setPresent, presentCount } = useAppello(schoolId, classId, session, date)
   const isToday = date === todayIso()

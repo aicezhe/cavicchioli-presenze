@@ -3,13 +3,12 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../context/AuthContext'
 import { useOperatoreClasses } from '../../hooks/useOperatoreClasses'
-import { useSchoolById } from '../../hooks/useSchools'
+import { useSchoolTheme } from '../../hooks/useSchools'
 import AppHeader from '../../components/AppHeader'
 import Crest from '../../components/Crest'
 import SessionSwitch from '../../components/SessionSwitch'
 import ClassSwitcher from '../../components/operatore/ClassSwitcher'
 import AppelloList from '../../components/operatore/AppelloList'
-import { schoolColor, schoolInitials } from '../../types'
 import type { Session } from '../../types'
 
 export default function OperatoreDashboard() {
@@ -30,7 +29,7 @@ export default function OperatoreDashboard() {
   // Contenuto del menu hamburger: profilo + logout
   const headerMenu = (close: () => void) => (
     <>
-      <div className="px-4 py-2 border-b border-dustyblue/20">
+      <div className="px-4 py-2 border-b border-black/10">
         <p className="text-sm font-medium">{profile?.name}</p>
         <p className="text-xs text-warmgray truncate">{profile?.email}</p>
       </div>
@@ -39,7 +38,7 @@ export default function OperatoreDashboard() {
           close()
           signOut(auth)
         }}
-        className="w-full text-left px-4 py-2 text-sm text-dustyblue hover:bg-cream transition-colors"
+        className="w-full text-left px-4 py-2 text-sm text-ink hover:bg-cream transition-colors"
       >
         Esci
       </button>
@@ -50,10 +49,9 @@ export default function OperatoreDashboard() {
 
   // La scuola dell'operatore si ricava dai suoi dati (schoolId nel percorso della classe):
   // header e accenti prendono nome e colore di QUELLA scuola.
-  const { school } = useSchoolById(active?.schoolId ?? classes[0]?.schoolId)
-  const color = school ? schoolColor(school) : '#6E859C'
+  const { school, color, initials } = useSchoolTheme(active?.schoolId ?? classes[0]?.schoolId)
   const headerEmblem = school ? (
-    <Crest size={40} variant="compact" color={color} initials={schoolInitials(school)} />
+    <Crest size={40} variant="compact" color={color} initials={initials} />
   ) : undefined
 
   return (

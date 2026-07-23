@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../context/AuthContext'
-import { useMySchools } from '../../hooks/useSchool'
+import { useMySchools } from '../../hooks/useSchools'
 import { useClasses } from '../../hooks/useClasses'
 import { useAdminStats } from '../../hooks/useAdminStats'
 import { useAllChildren } from '../../hooks/useAllChildren'
@@ -17,7 +17,7 @@ import ImpostazioniSection from '../../components/admin/ImpostazioniSection'
 import SearchModal from '../../components/admin/SearchModal'
 import Modal from '../../components/admin/Modal'
 import NewSchoolForm from '../../components/admin/NewSchoolForm'
-import { schoolColor, schoolInitials } from '../../types'
+import { DEFAULT_SCHOOL_COLOR, schoolColor, schoolInitials } from '../../types'
 
 // Impostazioni non è una scheda: si apre dal menu hamburger
 const TABS = [
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
     )
   }
 
-  const color = school ? schoolColor(school) : '#6E859C'
+  const color = school ? schoolColor(school) : DEFAULT_SCHOOL_COLOR
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
           <OperatoriSection classes={classes} onToggle={setOperator} />
         )}
         {tab === 'genitori' && (
-          <GenitoriSection children={allChildren} setParentLink={setParentLink} />
+          <GenitoriSection childrenList={allChildren} setParentLink={setParentLink} />
         )}
         {school && tab === 'impostazioni' && (
           <ImpostazioniSection
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
         open={showSearch}
         onClose={() => setShowSearch(false)}
         classes={classes}
-        children={allChildren}
+        childrenList={allChildren}
         onGoToClass={goToClass}
       />
 

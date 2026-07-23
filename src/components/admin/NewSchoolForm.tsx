@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import Crest from '../Crest'
 import { SCHOOL_COLORS, schoolInitials } from '../../types'
-import type { NewSchoolData } from '../../hooks/useSchool'
+import type { NewSchoolData } from '../../hooks/useSchools'
 
 type NewSchoolFormProps = {
   onSubmit: (data: NewSchoolData) => Promise<void>

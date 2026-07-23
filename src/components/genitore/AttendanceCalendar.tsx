@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DEFAULT_SCHOOL_COLOR } from '../../types'
 import type { AttendanceRecord, Session } from '../../types'
 
 type AttendanceCalendarProps = {
@@ -20,7 +21,7 @@ const iso = (y: number, m: number, d: number) =>
  * Giorno bordeaux = bambino presente; bianco = assente (o nessuna registrazione).
  * Toccando il titolo (mese/anno) si apre la scelta rapida di mese e anno.
  */
-export default function AttendanceCalendar({ records, session, color = '#6E859C' }: AttendanceCalendarProps) {
+export default function AttendanceCalendar({ records, session, color = DEFAULT_SCHOOL_COLOR }: AttendanceCalendarProps) {
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth()) // 0-11
@@ -71,7 +72,7 @@ export default function AttendanceCalendar({ records, session, color = '#6E859C'
         <button
           onClick={() => setPickerOpen((v) => !v)}
           aria-expanded={pickerOpen}
-          className="inline-flex items-center gap-1 font-serif text-lg font-semibold capitalize hover:text-dustyblue transition-colors"
+          className="inline-flex items-center gap-1 font-serif text-lg font-semibold capitalize hover:text-ink transition-colors"
         >
           {monthLabel}
           <svg
