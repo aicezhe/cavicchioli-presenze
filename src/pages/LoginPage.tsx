@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 import { FirebaseError } from 'firebase/app'
 import { motion } from 'framer-motion'
-import { auth } from '../lib/firebase'
+import { auth, db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
 import Crest from '../components/Crest'
 import { ROLE_LABELS } from '../types'
-import type { Role } from '../types'
+import type { Role, UserProfile } from '../types'
 
 // Traduciamo gli errori Firebase in messaggi leggibili; per il resto un testo generico
 function errorMessage(err: unknown): string {
@@ -34,26 +35,38 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
-  const { user } = useAuth()
-
-  // Se già autenticato (anche subito dopo il submit) → dashboard.
-  // Il redirect passa dal contesto e non da signIn: così non c'è race con ProtectedRoute
-  useEffect(() => {
-    if (user) navigate('/dashboard', { replace: true })
-  }, [user, navigate])
+  const { user, loading } = useAuth()
 
   // Il ruolo nell'URL deve essere uno di quelli noti, altrimenti si torna alla scelta del ruolo
   const isValidRole = role === 'admin' || role === 'operatore' || role === 'genitore'
+  const roleLabel = isValidRole ? ROLE_LABELS[role as Role] : ''
+
+  // Se si arriva GIÀ autenticati (sessione valida esistente) → al proprio dashboard.
+  // Nessun controllo di ruolo qui: la sessione è già stata validata al suo login.
+  // Escluso durante il submit, che gestisce da sé navigazione ed errori.
+  useEffect(() => {
+    if (!loading && user && !submitting) navigate('/dashboard', { replace: true })
+  }, [loading, user, submitting, navigate])
+
   if (!isValidRole) return <Navigate to="/" replace />
-  const roleLabel = ROLE_LABELS[role as Role]
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
     setSubmitting(true)
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password)
-      // La navigazione la fa lo useEffect sopra, quando il contesto rileva l'utente
+      const cred = await signInWithEmailAndPassword(auth, email.trim(), password)
+      // Questa pagina è per un ruolo preciso: verifico il ruolo del profilo.
+      // Se l'account esiste ma ha un altro ruolo (es. admin su /login/operatore),
+      // esco subito e mostro un errore, senza far entrare nel ruolo sbagliato.
+      const snap = await getDoc(doc(db, 'users', cred.user.uid))
+      const accountRole = snap.exists() ? (snap.data() as UserProfile).role : null
+      if (accountRole !== role) {
+        await signOut(auth)
+        setError(`Queste credenziali non appartengono a un account ${roleLabel}.`)
+        return
+      }
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       setError(errorMessage(err))
     } finally {
