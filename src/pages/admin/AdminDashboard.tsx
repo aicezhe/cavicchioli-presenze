@@ -8,6 +8,7 @@ import { useAdminStats } from '../../hooks/useAdminStats'
 import { useAllChildren } from '../../hooks/useAllChildren'
 import AppHeader from '../../components/AppHeader'
 import Crest from '../../components/Crest'
+import { PlatformCrest } from '../../components/PlatformCrest'
 import StatsCards from '../../components/admin/StatsCards'
 import ClassiSection from '../../components/admin/ClassiSection'
 import OperatoriSection from '../../components/admin/OperatoriSection'
@@ -85,11 +86,14 @@ export default function AdminDashboard() {
     </>
   )
 
+  // L'admin è a livello piattaforma: header NOTA (non il nome della scuola)
+  const notaEmblem = <PlatformCrest variant="icon" size={30} />
+
   // Bootstrap: nessuna scuola → schermata di creazione della prima scuola
   if (!schoolsLoading && schools.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader tools menu={headerMenu} />
+        <AppHeader tools menu={headerMenu} emblem={notaEmblem} title="NOTA" />
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="w-full max-w-sm bg-white rounded-xl border border-black/10 p-6 sm:p-8">
             <h1 className="font-serif text-xl font-semibold text-dustyblue text-center">Crea la tua scuola</h1>
@@ -107,7 +111,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} />
+      <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} emblem={notaEmblem} title="NOTA" />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-4 py-8 space-y-8">
         {/* Le mie scuole: emblema + selettore scuola attiva + nuova scuola */}

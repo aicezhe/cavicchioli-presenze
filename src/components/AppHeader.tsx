@@ -13,6 +13,10 @@ type AppHeaderProps = {
   right?: ReactNode
   /** cabinet: contenuto del menu hamburger (riceve una funzione per chiuderlo) */
   menu?: (close: () => void) => ReactNode
+  /** Emblema a sinistra. Default: scudo scuola compatto */
+  emblem?: ReactNode
+  /** Nome del brand a sinistra. Default: "Cavicchioli" */
+  title?: string
 }
 
 function SearchIcon() {
@@ -36,7 +40,7 @@ function MenuIcon() {
 
 /** Intestazione condivisa: scudo + nome scuola su fondo bordeaux con linea dorata.
     centered → landing; altrimenti cabina con ricerca e menu hamburger (impostazioni, logout). */
-export default function AppHeader({ centered, tools, onSearchClick, right, menu }: AppHeaderProps) {
+export default function AppHeader({ centered, tools, onSearchClick, right, menu, emblem, title }: AppHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
 
@@ -48,8 +52,8 @@ export default function AppHeader({ centered, tools, onSearchClick, right, menu 
           (centered ? 'justify-center' : '')
         }
       >
-        <Crest size={40} variant="compact" />
-        <span className="font-serif text-xl font-semibold">Cavicchioli</span>
+        {emblem ?? <Crest size={40} variant="compact" />}
+        <span className="font-serif text-xl font-semibold">{title ?? 'Cavicchioli'}</span>
 
         {!centered && (
           <div className="ml-auto flex items-center gap-4">
