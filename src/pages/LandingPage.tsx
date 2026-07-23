@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import AppHeader from '../components/AppHeader'
+import { PlatformCrest } from '../components/PlatformCrest'
 import type { Role } from '../types'
 import { ROLE_LABELS } from '../types'
 
@@ -22,12 +22,14 @@ export default function LandingPage() {
       />
       <div aria-hidden="true" className="fixed inset-0 -z-10 bg-cream/85" />
 
-      {/* Intestazione landing: scudo + nome centrati, senza strumenti */}
-      <AppHeader centered />
-
-      {/* Scelta del ruolo */}
+      {/* Livello piattaforma NOTA (non scuola): emblema + sottotitolo */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-        <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-ink text-center">
+        <PlatformCrest variant="full" size={120} />
+        <p className="mt-3 text-sm text-warmgray font-sans">
+          Piattaforma presenze scolastiche
+        </p>
+
+        <h1 className="mt-12 font-serif text-3xl sm:text-4xl font-semibold text-ink text-center">
           Scegli il tuo ruolo
         </h1>
         <div className="mt-4 h-px w-24 bg-dustyblue" aria-hidden="true" />
