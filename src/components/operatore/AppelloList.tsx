@@ -1,4 +1,5 @@
-import { useAppello } from '../../hooks/useAppello'
+import { useState } from 'react'
+import { useAppello, todayIso } from '../../hooks/useAppello'
 import ChildAttendanceRow from './ChildAttendanceRow'
 import type { Session } from '../../types'
 import { SESSION_LABELS } from '../../types'
@@ -12,9 +13,18 @@ type AppelloListProps = {
   color?: string
 }
 
-// Data di oggi in italiano esteso, es. "mercoledì 22 luglio 2026"
-function todayLabel(): string {
-  return new Date().toLocaleDateString('it-IT', {
+// Sposta una data ISO di N giorni (aritmetica locale, senza scarti di fuso)
+function shiftIso(iso: string, delta: number): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  const dt = new Date(y, m - 1, d + delta)
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())}`
+}
+
+// Etichetta estesa in italiano, es. "giovedì 23 luglio 2026"
+function dateLabel(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('it-IT', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -22,20 +32,48 @@ function todayLabel(): string {
   })
 }
 
-/** Appello del giorno: intestazione con data, progresso, elenco bambini con interruttore. */
+/** Appello del giorno: data navigabile (frecce prec./succ.), progresso, elenco bambini. */
 export default function AppelloList({ schoolId, classId, operatoreUid, session, color = '#6E859C' }: AppelloListProps) {
-  const { children, present, setPresent, presentCount } = useAppello(schoolId, classId, session)
+  const [date, setDate] = useState(todayIso())
+  const { children, present, setPresent, presentCount } = useAppello(schoolId, classId, session, date)
+  const isToday = date === todayIso()
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <div>
-          <p className="text-sm text-warmgray">
-            Appello di <span className="lowercase">{SESSION_LABELS[session]}</span> —
-          </p>
-          <p className="font-serif text-lg font-semibold capitalize">{todayLabel()}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-1">
+          {/* Freccia giorno precedente */}
+          <button
+            onClick={() => setDate((d) => shiftIso(d, -1))}
+            aria-label="Giorno precedente"
+            className="w-8 h-8 grid place-items-center rounded-lg text-warmgray hover:bg-cream hover:text-ink transition-colors"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+          </button>
+
+          <div className="text-center min-w-[11rem]">
+            <p className="text-xs text-warmgray">
+              Appello di <span className="lowercase">{SESSION_LABELS[session]}</span>
+            </p>
+            <p className="font-serif text-lg font-semibold capitalize leading-tight">{dateLabel(date)}</p>
+            {!isToday && (
+              <button onClick={() => setDate(todayIso())} className="text-xs hover:underline" style={{ color }}>
+                Torna a oggi
+              </button>
+            )}
+          </div>
+
+          {/* Freccia giorno successivo */}
+          <button
+            onClick={() => setDate((d) => shiftIso(d, 1))}
+            aria-label="Giorno successivo"
+            className="w-8 h-8 grid place-items-center rounded-lg text-warmgray hover:bg-cream hover:text-ink transition-colors"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
         </div>
-        {/* Progresso: quanti segnati presenti (aiuta a non dimenticare nessuno) */}
+
+        {/* Progresso: quanti segnati presenti */}
         <p className="text-sm font-medium" style={{ color }}>
           {presentCount} / {children.length} presenti
         </p>
