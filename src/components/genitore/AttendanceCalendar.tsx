@@ -91,7 +91,7 @@ export default function AttendanceCalendar({ records, session }: AttendanceCalen
             <div
               key={dateIso}
               className={
-                'aspect-square grid place-items-center rounded-lg text-sm border transition-colors ' +
+                'aspect-square grid place-items-center rounded-lg text-lg sm:text-xl font-medium border transition-colors ' +
                 (present
                   ? 'bg-crimson text-cream border-crimson'
                   : 'bg-white text-ink border-gold/30') +
