@@ -145,11 +145,7 @@ function PasswordSection({
       {!unlocked ? (
         // Sempre lo stesso passo: inserisci il PIN per sbloccare i cambi password.
         // Se non ne hai impostato uno tuo, vale la chiave predefinita 0101.
-        <UnlockCard
-          expected={expectedPin}
-          usingDefault={!savedPin}
-          onUnlock={() => setUnlocked(true)}
-        />
+        <UnlockCard expected={expectedPin} onUnlock={() => setUnlocked(true)} />
       ) : (
         <>
           <div className="flex items-center justify-between">
@@ -230,7 +226,7 @@ function SetPinCard({ title, hint, onSave }: { title: string; hint: string; onSa
   )
 }
 
-function UnlockCard({ expected, usingDefault, onUnlock }: { expected: string; usingDefault: boolean; onUnlock: () => void }) {
+function UnlockCard({ expected, onUnlock }: { expected: string; onUnlock: () => void }) {
   const [pin, setPin] = useState('')
   const [error, setError] = useState<string | null>(null)
 
@@ -249,7 +245,6 @@ function UnlockCard({ expected, usingDefault, onUnlock }: { expected: string; us
         <p className="text-sm font-medium">Chiave di sicurezza</p>
         <p className="text-xs text-warmgray mt-0.5">
           Inseriscila per sbloccare i cambi password di operatori e genitori.
-          {usingDefault && <span className="block">Chiave predefinita: <span className="font-mono font-semibold text-ink">0101</span>.</span>}
         </p>
       </div>
       <input
