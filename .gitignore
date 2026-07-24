@@ -32,3 +32,6 @@ dist-ssr
 # Script di seed locale (non versionare)
 seed-users.mjs
 *.tmp.mjs
+
+# Elenco credenziali locale (mai versionare)
+credenziali-locali.md
