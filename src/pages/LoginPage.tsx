@@ -3,7 +3,6 @@ import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
-import { FirebaseError } from 'firebase/app'
 import { motion } from 'framer-motion'
 import { auth, db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
@@ -14,19 +13,19 @@ import type { Role, UserProfile } from '../types'
 const ROLES: Role[] = ['admin', 'operatore', 'genitore']
 
 function errorMessage(err: unknown): string {
-  if (err instanceof FirebaseError) {
-    switch (err.code) {
-      case 'auth/invalid-credential':
-      case 'auth/wrong-password':
-      case 'auth/user-not-found':
-        return 'Email o password non corretti.'
-      case 'auth/too-many-requests':
-        return 'Troppi tentativi. Riprova tra qualche minuto.'
-      case 'auth/invalid-email':
-        return 'Indirizzo email non valido.'
-    }
+  // Leggo err.code DIRETTAMENTE (non via `instanceof FirebaseError`): con bundle che
+  // duplicano firebase l'instanceof può fallire e far cadere tutto nel messaggio generico.
+  const code = typeof err === 'object' && err !== null ? (err as { code?: string }).code : undefined
+  switch (code) {
+    case 'auth/too-many-requests':
+      return 'Troppi tentativi. Riprova tra qualche minuto.'
+    case 'auth/network-request-failed':
+      return 'Problema di connessione. Riprova.'
+    default:
+      // Tutti gli errori di credenziali (invalid-credential / wrong-password / user-not-found
+      // / invalid-email …) → un unico messaggio chiaro: login o password errati.
+      return 'Email o password non corretti.'
   }
-  return 'Errore di accesso. Riprova.'
 }
 
 /**
