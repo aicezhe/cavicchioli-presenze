@@ -98,11 +98,18 @@ export default function SchoolsPage() {
           </div>
         )}
 
-        <div className="mt-10 text-center">
+        {/* Compare solo alla FINE: parte quando l'ultima card ha finito di posarsi.
+            Ritardo = inizio ultima card (0.7 + (n-1)·0.08) + la sua durata (0.7). */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 + Math.max(0, schools.length - 1) * 0.08 + 0.7, duration: 0.6, ease: EASE }}
+          className="mt-10 text-center"
+        >
           <Link to="/" className="text-sm text-warmgray hover:text-dustyblue transition-colors">
             &larr; Torna alla home
           </Link>
-        </div>
+        </motion.div>
       </main>
     </div>
   )
