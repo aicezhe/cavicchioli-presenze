@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { AttendanceRecord, SchoolClass, WithId } from '../types'
@@ -26,6 +26,12 @@ const todayIso = () => new Date().toISOString().slice(0, 10)
  * Prestazioni: tutte le letture partono in parallelo (Promise.all), non in cascata, e per la
  * presenza di oggi leggo il SINGOLO documento attendance/{oggi}, non l'intero storico del
  * bambino. Così il ricalcolo resta veloce anche con molte classi e molti bambini.
+ *
+ * Quando si ricalcola: solo quando cambia l'INSIEME delle classi (aggiunta/rimozione),
+ * non ad ogni aggiornamento dell'array `classes`. `classes` cambia riferimento anche quando
+ * si assegna un operatore: senza la chiave stabile qui sotto rileggeremmo tutti i bambini per
+ * niente. classIdsKey (memoizzata sugli id) fa scattare la lettura solo su add/remove; le
+ * modifiche ai bambini arrivano invece tramite refreshKey (refreshStats dall'admin).
  */
 export function useAdminStats(
   schoolId: string | undefined,
@@ -42,6 +48,10 @@ export function useAdminStats(
   const operatorIds = new Set<string>()
   classes.forEach((c) => c.operatorIds?.forEach((id) => operatorIds.add(id)))
   const operatorCount = operatorIds.size
+
+  // Chiave stabile: cambia SOLO quando l'insieme delle classi cambia (add/remove),
+  // non quando cambia il riferimento dell'array (es. assegnazione operatore).
+  const classIdsKey = useMemo(() => classes.map((c) => c.id).sort().join(','), [classes])
 
   useEffect(() => {
     if (!schoolId) {
@@ -90,7 +100,12 @@ export function useAdminStats(
     return () => {
       cancelled = true
     }
-  }, [schoolId, classes, refreshKey])
+    // Dipende da classIdsKey (non da `classes`): rilegge solo su cambio scuola,
+    // add/remove classe o refresh esplicito dopo una modifica ai bambini.
+    // `classes` è usato dentro compute() ma il suo contenuto rilevante (gli id) è
+    // catturato da classIdsKey, quindi la lettura resta corretta.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schoolId, classIdsKey, refreshKey])
 
   return { classCount, childrenCount: aggregate.childrenCount, presentPct: aggregate.presentPct, operatorCount }
 }
