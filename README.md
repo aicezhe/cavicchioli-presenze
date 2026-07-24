@@ -9,8 +9,8 @@ operatori. Progetto realizzato per il colloquio tecnico **byte3**.
 > marchio, annotazione** — cioè **"segnare/prendere nota"**. È esattamente ciò che fa la
 > piattaforma: *segnare le presenze*. Un nome breve, in tema e facile da ricordare.
 
-🔗 **Demo live:** https://schoolgiaccomo.web.app
-📦 **Repository:** https://github.com/aicezhe/cavicchioli-presenze
+**Demo live:** https://schoolgiaccomo.web.app
+**Repository:** https://github.com/aicezhe/cavicchioli-presenze
 
 ---
 
