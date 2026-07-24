@@ -59,6 +59,10 @@ export default function AdminDashboard() {
   const goToSettings = () =>
     navigate(activeSchoolId ? `/admin/settings?school=${activeSchoolId}` : '/admin/settings')
 
+  // Vai alle Statistiche presenze (stessa scuola attiva)
+  const goToStats = () =>
+    navigate(activeSchoolId ? `/admin/statistiche?school=${activeSchoolId}` : '/admin/statistiche')
+
   // Ricerca + salto a una classe
   const [showSearch, setShowSearch] = useState(false)
   const [openClassId, setOpenClassId] = useState<string | null>(null)
@@ -75,6 +79,15 @@ export default function AdminDashboard() {
         <p className="text-sm font-medium">{profile?.name}</p>
         <p className="text-xs text-warmgray truncate">{profile?.email}</p>
       </div>
+      <button
+        onClick={() => {
+          goToStats()
+          close()
+        }}
+        className="w-full text-left px-4 py-2 text-sm hover:bg-cream transition-colors"
+      >
+        Statistiche presenze
+      </button>
       <button
         onClick={() => {
           goToSettings()

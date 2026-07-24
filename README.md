@@ -108,6 +108,21 @@ users/{uid}                              role, name, email, phone?, canManageRos
 
 ---
 
+## Statistiche presenze (funzionalità extra)
+
+Dal menu dell'amministratore c'è una sezione **Statistiche presenze** con un **grafico a
+barre** delle presenze raggruppabili per **giorno, settimana e mese**, più un riepilogo
+(presenze totali, giorni con presenze, numero di bambini).
+
+**Perché l'ho fatta:** il registro giornaliero risponde alla domanda "chi c'è oggi?", ma da
+solo non mostra **l'andamento nel tempo**. Aggregando le presenze per periodo, l'amministratore
+vede a colpo d'occhio i **trend** (giorni/settimane più o meno frequentati), utili per
+organizzare il servizio. È anche la **base** su cui in futuro si potrebbero costruire viste
+dedicate ai genitori. Il grafico è realizzato **senza librerie esterne** (solo CSS), così ogni
+riga è spiegabile e il bundle resta autonomo; l'aggregazione dei dati è memoizzata con `useMemo`.
+
+---
+
 ## Nota sui dati (database di test)
 
 Il database è **di prova / fittizio**, quindi:
@@ -132,8 +147,6 @@ stato **interessante** capire come spostare la logica dei permessi sul database.
 - Implementare la **registrazione reale** (con verifica email).
 - Dedicare **più attenzione al design**.
 - Aggiungere **più test** (inclusi i tre flussi e le Security Rules via emulatore).
-- Valutare **funzionalità con l'AI** — per esempio **statistiche sulle presenze** degli
-  studenti, che potrebbero essere utili e interessanti per i genitori.
 
 ---
 
