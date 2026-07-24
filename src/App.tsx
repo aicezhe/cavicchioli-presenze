@@ -3,8 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
-import SchoolsPage from './pages/SchoolsPage'
-import SchoolRolePage from './pages/SchoolRolePage'
 import DashboardPage from './pages/DashboardPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminSettings from './pages/admin/AdminSettings'
@@ -32,14 +30,12 @@ function App() {
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       >
         <Routes location={location}>
-          {/* Livello piattaforma NOTA */}
+          {/* Landing: scelta del ruolo. La scuola si ricava dall'account al login. */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/admin/login" element={<LoginPage platformAdmin />} />
-
-          {/* Livello scuola: directory → scelta ruolo → login */}
-          <Route path="/schools" element={<SchoolsPage />} />
-          <Route path="/schools/:schoolId/role" element={<SchoolRolePage />} />
-          <Route path="/schools/:schoolId/login/:role" element={<LoginPage />} />
+          <Route path="/login/:role" element={<LoginPage />} />
+          {/* Vecchie rotte → nuova landing (compatibilità link salvati) */}
+          <Route path="/admin/login" element={<Navigate to="/login/admin" replace />} />
+          <Route path="/schools" element={<Navigate to="/" replace />} />
 
           {/* Qualsiasi utente autenticato: dispatcher che smista in base al ruolo */}
           <Route element={<ProtectedRoute />}>

@@ -24,9 +24,11 @@ export default function LandingPage() {
         </h1>
         <div className="mt-4 h-px w-24 bg-dustyblue" aria-hidden="true" />
 
-        <div className="mt-12 sm:mt-14 flex flex-col sm:flex-row gap-5 sm:gap-6 w-full max-w-2xl items-stretch justify-center">
-          <NavCard to="/admin/login" label="Amministratore" />
-          <NavCard to="/schools" label="Seleziona la tua scuola" />
+        {/* Scelta del ruolo: la scuola si ricava automaticamente dall'account al login */}
+        <div className="mt-12 sm:mt-14 flex flex-col gap-4 w-full max-w-sm items-stretch">
+          <NavCard to="/login/admin" label="Amministratore" />
+          <NavCard to="/login/operatore" label="Operatore" />
+          <NavCard to="/login/genitore" label="Genitore" />
         </div>
       </main>
     </div>

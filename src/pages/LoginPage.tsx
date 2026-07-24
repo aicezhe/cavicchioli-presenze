@@ -7,16 +7,11 @@ import { FirebaseError } from 'firebase/app'
 import { motion } from 'framer-motion'
 import { auth, db } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
-import { useSchoolById } from '../hooks/useSchools'
-import Crest from '../components/Crest'
 import { PlatformCrest } from '../components/PlatformCrest'
-import { DEFAULT_SCHOOL_COLOR, ROLE_LABELS, schoolColor, schoolInitials } from '../types'
+import { ROLE_LABELS } from '../types'
 import type { Role, UserProfile } from '../types'
 
-type LoginPageProps = {
-  /** true su /admin/login: livello piattaforma (emblema NOTA, ruolo admin fisso) */
-  platformAdmin?: boolean
-}
+const ROLES: Role[] = ['admin', 'operatore', 'genitore']
 
 function errorMessage(err: unknown): string {
   if (err instanceof FirebaseError) {
@@ -34,12 +29,18 @@ function errorMessage(err: unknown): string {
   return 'Errore di accesso. Riprova.'
 }
 
-export default function LoginPage({ platformAdmin = false }: LoginPageProps) {
-  const params = useParams<{ role?: string; schoolId?: string }>()
-  const schoolId = params.schoolId
-  // Livello piattaforma → ruolo admin fisso; livello scuola → ruolo dall'URL
-  const role = platformAdmin ? 'admin' : params.role
-  const { school } = useSchoolById(platformAdmin ? undefined : schoolId)
+/**
+ * Accesso per RUOLO (admin/operatore/genitore): si entra con email + password.
+ * La scuola NON si sceglie qui: viene ricavata automaticamente dall'account
+ * (assegnazioni delle classi per l'operatore, collegamenti dei figli per il genitore,
+ * adminIds per l'amministratore). Il ruolo nell'URL serve solo a etichettare e a
+ * verificare che le credenziali appartengano davvero a quel ruolo.
+ */
+export default function LoginPage() {
+  const params = useParams<{ role?: string }>()
+  const role = params.role
+  const isValidRole = !!role && (ROLES as string[]).includes(role)
+  const roleLabel = isValidRole ? ROLE_LABELS[role as Role] : ''
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -48,21 +49,12 @@ export default function LoginPage({ platformAdmin = false }: LoginPageProps) {
   const navigate = useNavigate()
   const { user, loading } = useAuth()
 
-  // A livello scuola sono ammessi solo operatore/genitore; l'admin entra dalla piattaforma
-  const allowed: Role[] = platformAdmin ? ['admin'] : ['operatore', 'genitore']
-  const isValidRole = !!role && (allowed as string[]).includes(role)
-  const roleLabel = isValidRole ? ROLE_LABELS[role as Role] : ''
-
-  // Colore/tema: dusty-blue per la piattaforma, colore della scuola nel contesto scuola
-  const color = platformAdmin ? DEFAULT_SCHOOL_COLOR : schoolColor(school ?? {})
-  const backTo = platformAdmin ? '/' : `/schools/${schoolId}/role`
-
-  // Sessione già attiva → al proprio dashboard (nessun controllo ruolo qui)
+  // Sessione già attiva → al proprio dashboard (il dispatcher smista per ruolo)
   useEffect(() => {
     if (!loading && user && !submitting) navigate('/dashboard', { replace: true })
   }, [loading, user, submitting, navigate])
 
-  if (!isValidRole) return <Navigate to={platformAdmin ? '/' : '/schools'} replace />
+  if (!isValidRole) return <Navigate to="/" replace />
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -70,7 +62,7 @@ export default function LoginPage({ platformAdmin = false }: LoginPageProps) {
     setSubmitting(true)
     try {
       const cred = await signInWithEmailAndPassword(auth, email.trim(), password)
-      // La pagina è per un ruolo preciso: se l'account ha un altro ruolo, esco ed avviso
+      // La pagina è per un ruolo preciso: se l'account ha un altro ruolo, esco e avviso
       const snap = await getDoc(doc(db, 'users', cred.user.uid))
       const accountRole = snap.exists() ? (snap.data() as UserProfile).role : null
       if (accountRole !== role) {
@@ -95,14 +87,8 @@ export default function LoginPage({ platformAdmin = false }: LoginPageProps) {
         className="w-full max-w-sm"
       >
         <div className="flex flex-col items-center text-center mb-8">
-          {platformAdmin ? (
-            <PlatformCrest variant="full" size={104} />
-          ) : (
-            <Crest size={110} variant="full" color={color} initials={schoolInitials(school ?? { name: '' })} />
-          )}
-          <h1 className="mt-4 font-serif text-2xl font-semibold" style={{ color }}>
-            {platformAdmin ? 'NOTA' : (school?.name ?? 'Accesso')}
-          </h1>
+          <PlatformCrest variant="full" size={104} />
+          <h1 className="mt-4 font-serif text-2xl font-semibold text-dustyblue">NOTA</h1>
           <p className="mt-1 text-sm text-warmgray">
             Accesso&nbsp;&mdash;&nbsp;<span className="text-ink font-medium">{roleLabel}</span>
           </p>
@@ -136,7 +122,7 @@ export default function LoginPage({ platformAdmin = false }: LoginPageProps) {
           </label>
 
           {error && (
-            <p role="alert" className="mt-4 text-sm rounded-lg px-3 py-2" style={{ color, backgroundColor: `${color}0d`, border: `1px solid ${color}33` }}>
+            <p role="alert" className="mt-4 text-sm rounded-lg px-3 py-2 text-dustyblue bg-dustyblue/5 border border-dustyblue/20">
               {error}
             </p>
           )}
@@ -144,8 +130,7 @@ export default function LoginPage({ platformAdmin = false }: LoginPageProps) {
           <button
             type="submit"
             disabled={submitting}
-            style={{ backgroundColor: color }}
-            className="mt-6 w-full rounded-lg px-4 py-2.5 text-cream font-medium
+            className="mt-6 w-full rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium
                        hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {submitting ? 'Accesso in corso…' : 'Accedi'}
@@ -153,7 +138,7 @@ export default function LoginPage({ platformAdmin = false }: LoginPageProps) {
         </form>
 
         <div className="mt-4 text-center">
-          <Link to={backTo} className="text-sm text-warmgray hover:text-dustyblue transition-colors">
+          <Link to="/" className="text-sm text-warmgray hover:text-dustyblue transition-colors">
             &larr; Indietro
           </Link>
         </div>
