@@ -28,3 +28,7 @@ dist-ssr
 
 # Firebase CLI cache
 .firebase/
+
+# Script di seed locale (non versionare)
+seed-users.mjs
+*.tmp.mjs
