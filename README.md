@@ -185,9 +185,8 @@ ruolo e si entra con email + password.
 - **Chiave impostazioni admin (PIN): `0101`** — sblocca la **gestione password** nella pagina
   Impostazioni dell'amministratore (una conferma prima di inviare i reset a operatori/genitori).
   Si può sostituire con un PIN personale.
-- **Account amministratore:** email/password li conosci tu (qui lascio dei segnaposto —
-  inseriscili tu se vuoi condividerli): `email: <la-tua-email-admin>` · `password: <…>`.
-- **Password comune di tutti gli account di test:** `Nota2026!`
+- **Account amministratore:** `admin@cavicchioli.test` · password `Presenze2026!`.
+- **Password comune degli account di test (operatori/genitori):** `Nota2026!`
 
 **Come funziona il cambio password:** dalla pagina Impostazioni (sbloccata col PIN) l'admin invia
 un'**email di reset** all'utente. Sul piano gratuito Firebase non c'è l'Admin SDK, quindi non si
