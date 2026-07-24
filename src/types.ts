@@ -72,9 +72,24 @@ export type SchoolClass = {
 export const CLASS_YEARS = [1, 2, 3, 4, 5] as const
 export const CLASS_SECTIONS = ['A', 'B', 'C', 'D', 'E'] as const
 
-/** Nome classe canonico dai selettori, es. (2, 'B') → "2ª B". */
+/** Nome classe numerico dai selettori, es. (2, 'B') → "2ª B". */
 export function makeClassName(year: number, section: string): string {
   return `${year}ª ${section}`
+}
+
+/** Sezioni "a colori" (es. scuola dell'infanzia): nome + swatch per la scelta. */
+export const CLASS_COLOR_SECTIONS: { name: string; value: string }[] = [
+  { name: 'Blu', value: '#3E6DB5' },
+  { name: 'Rossa', value: '#B5654A' },
+  { name: 'Verde', value: '#4F7060' },
+  { name: 'Gialla', value: '#B08A3E' },
+  { name: 'Arancione', value: '#C57B39' },
+  { name: 'Viola', value: '#7A5C7E' },
+]
+
+/** Nome classe a colori, es. "Blu" → "Sezione Blu". */
+export function makeColorClassName(colorName: string): string {
+  return `Sezione ${colorName}`
 }
 
 export type Child = {

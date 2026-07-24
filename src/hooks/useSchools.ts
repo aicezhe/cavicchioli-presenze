@@ -51,10 +51,14 @@ export function useSchoolById(schoolId: string | undefined) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Azzera SEMPRE al cambio id: così il tema (nome/colore/emblema) non mostra mai
+    // una scuola precedente mentre il nuovo id è undefined o in caricamento.
+    setSchool(null)
     if (!schoolId) {
       setLoading(false)
       return
     }
+    setLoading(true)
     const unsub = onSnapshot(
       doc(db, 'schools', schoolId),
       (snap) => {

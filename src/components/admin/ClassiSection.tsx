@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import ClassAccordion from './ClassAccordion'
 import Modal from './Modal'
-import { CLASS_SECTIONS, CLASS_YEARS, makeClassName } from '../../types'
+import { CLASS_COLOR_SECTIONS, CLASS_SECTIONS, CLASS_YEARS, makeClassName, makeColorClassName } from '../../types'
 import type { SchoolClass, WithId } from '../../types'
 
 type ClassiSectionProps = {
@@ -29,10 +29,13 @@ export default function ClassiSection({
   openNonce,
 }: ClassiSectionProps) {
   const [showNewClass, setShowNewClass] = useState(false)
-  // Composizione guidata del nome: anno + sezione (niente testo libero)
+  // Composizione guidata del nome (niente testo libero):
+  // 'numerica' → anno + sezione (es. "2ª B"); 'colore' → sezione a colori (es. "Sezione Blu")
+  const [nameType, setNameType] = useState<'numerica' | 'colore'>('numerica')
   const [year, setYear] = useState<number>(CLASS_YEARS[0])
   const [section, setSection] = useState<string>(CLASS_SECTIONS[0])
-  const newName = makeClassName(year, section)
+  const [colorName, setColorName] = useState<string>(CLASS_COLOR_SECTIONS[0].name)
+  const newName = nameType === 'numerica' ? makeClassName(year, section) : makeColorClassName(colorName)
   const alreadyExists = classes.some((c) => c.name === newName)
 
   async function handleAddClass(e: FormEvent) {
@@ -78,35 +81,74 @@ export default function ClassiSection({
 
       <Modal open={showNewClass} title="Nuova classe" onClose={() => setShowNewClass(false)}>
         <form onSubmit={handleAddClass} className="space-y-4">
-          {/* Scelta guidata: anno (1–5) + sezione (A–E), con anteprima del nome */}
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block">
-              <span className="text-sm font-medium">Anno</span>
-              <select
-                value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
-                className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
-                           focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
+          {/* Tipo di nome: numerica (1ª A) o a colori (Sezione Blu, es. infanzia) */}
+          <div className="inline-flex rounded-lg border border-warmgray/40 p-0.5 text-sm">
+            {(['numerica', 'colore'] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setNameType(t)}
+                className={
+                  'rounded-md px-3 py-1.5 font-medium transition-colors ' +
+                  (nameType === t ? 'bg-dustyblue text-cream' : 'text-warmgray hover:text-ink')
+                }
               >
-                {CLASS_YEARS.map((y) => (
-                  <option key={y} value={y}>{y}ª</option>
-                ))}
-              </select>
-            </label>
-            <label className="block">
-              <span className="text-sm font-medium">Sezione</span>
-              <select
-                value={section}
-                onChange={(e) => setSection(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
-                           focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
-              >
-                {CLASS_SECTIONS.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </label>
+                {t === 'numerica' ? 'Numerica' : 'A colori'}
+              </button>
+            ))}
           </div>
+
+          {nameType === 'numerica' ? (
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="text-sm font-medium">Anno</span>
+                <select
+                  value={year}
+                  onChange={(e) => setYear(Number(e.target.value))}
+                  className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
+                             focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
+                >
+                  {CLASS_YEARS.map((y) => (
+                    <option key={y} value={y}>{y}ª</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium">Sezione</span>
+                <select
+                  value={section}
+                  onChange={(e) => setSection(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
+                             focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
+                >
+                  {CLASS_SECTIONS.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          ) : (
+            <div>
+              <span className="text-sm font-medium">Colore della sezione</span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {CLASS_COLOR_SECTIONS.map((c) => (
+                  <button
+                    key={c.name}
+                    type="button"
+                    onClick={() => setColorName(c.name)}
+                    aria-pressed={colorName === c.name}
+                    className={
+                      'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors ' +
+                      (colorName === c.name ? 'border-ink bg-cream' : 'border-warmgray/40 hover:bg-cream/50')
+                    }
+                  >
+                    <span className="h-3.5 w-3.5 rounded-full" style={{ backgroundColor: c.value }} />
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <p className="text-sm text-warmgray">
             Classe: <span className="font-serif font-semibold text-ink">{newName}</span>
