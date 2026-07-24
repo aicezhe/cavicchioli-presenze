@@ -49,7 +49,7 @@ export default function SchoolsPage() {
         ) : schools.length === 0 ? (
           <p className="mt-10 text-center text-sm text-warmgray">Nessuna scuola disponibile.</p>
         ) : (
-          <div className="mt-10 flex flex-col gap-4 max-w-lg mx-auto">
+          <div className="mt-10 flex flex-col gap-2.5 max-w-md mx-auto">
             {schools.map((school, i) => {
               const color = schoolColor(school)
               const isHover = hovered === school.id
@@ -57,26 +57,36 @@ export default function SchoolsPage() {
                 <motion.button
                   key={school.id}
                   // Affiora dopo che il titolo è salito, in cascata
-                  initial={{ opacity: 0, y: 26 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.9 + i * 0.07, duration: 0.45, ease: 'easeOut' }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
+                  transition={{ delay: 0.6 + i * 0.05, duration: 0.4, ease: 'easeOut' }}
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.99 }}
                   onMouseEnter={() => setHovered(school.id)}
                   onMouseLeave={() => setHovered(null)}
                   onFocus={() => setHovered(school.id)}
                   onBlur={() => setHovered(null)}
                   onClick={() => navigate(`/schools/${school.id}/role`)}
                   style={{
-                    borderColor: color,
-                    // Riempimento semi-trasparente nel colore della scuola solo all'hover
-                    backgroundColor: isHover ? `${color}2e` : '#fff',
+                    // Riga pulita: bordo sottile neutro, che prende il colore della scuola all'hover;
+                    // velo di colore appena percettibile solo al passaggio.
+                    borderColor: isHover ? color : 'rgba(0,0,0,0.10)',
+                    backgroundColor: isHover ? `${color}12` : '#fff',
                   }}
-                  className="flex items-center justify-center gap-3 rounded-[28px] border-2 px-5 py-4 text-center
-                             shadow-sm hover:shadow-xl transition-[background-color,box-shadow] duration-200"
+                  className="group flex items-center gap-3.5 rounded-xl border px-4 py-3 text-left
+                             transition-colors duration-200"
                 >
-                  <Crest size={52} variant="compact" color={color} initials={schoolInitials(school)} />
-                  <span className="font-serif text-xl sm:text-2xl font-semibold text-ink">{school.name}</span>
+                  <Crest size={40} variant="compact" color={color} initials={schoolInitials(school)} />
+                  <span className="font-serif text-lg font-semibold text-ink leading-snug">{school.name}</span>
+                  {/* Chevron: grigio a riposo, colore scuola all'hover, con lieve scorrimento */}
+                  <svg
+                    width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke={isHover ? color : '#8A8580'} strokeWidth="2"
+                    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+                    className="ml-auto shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
+                  >
+                    <path d="M9 6l6 6-6 6" />
+                  </svg>
                 </motion.button>
               )
             })}
