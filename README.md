@@ -175,6 +175,47 @@ Il database è **di prova / fittizio**, quindi:
 
 ---
 
+## Accessi e credenziali di prova
+
+Per provare la demo direttamente. Sono **account di test usa-e-getta** su un progetto Firebase
+dimostrativo; i dati restano comunque protetti dalle Security Rules. Dalla landing si sceglie il
+ruolo e si entra con email + password.
+
+### Password e chiavi
+- **Chiave impostazioni admin (PIN): `0101`** — sblocca la **gestione password** nella pagina
+  Impostazioni dell'amministratore (una conferma prima di inviare i reset a operatori/genitori).
+  Si può sostituire con un PIN personale.
+- **Account amministratore:** email/password li conosci tu (qui lascio dei segnaposto —
+  inseriscili tu se vuoi condividerli): `email: <la-tua-email-admin>` · `password: <…>`.
+- **Password comune di tutti gli account di test:** `Nota2026!`
+
+**Come funziona il cambio password:** dalla pagina Impostazioni (sbloccata col PIN) l'admin invia
+un'**email di reset** all'utente. Sul piano gratuito Firebase non c'è l'Admin SDK, quindi non si
+imposta la password di un altro utente dal client: l'email di reset è l'unico modo reale, e la
+nuova password la sceglie l'utente stesso.
+
+### Operatori
+| Email | Nome | Scuola |
+|---|---|---|
+| `op.leonardo@nota.test`   | Marco Bianchi  | Leonardo da Vinci |
+| `op.moro@nota.test`       | Giulia Rossi   | Aldo Moro |
+| `op.rodari@nota.test`     | Sara Costa     | Gianni Rodari |
+| `op.montessori@nota.test` | Luca Gallo     | Maria Montessori |
+| `op.multi@nota.test`      | Davide Fontana | Leonardo + Montessori (2 scuole) |
+
+### Genitori
+| Email | Nome | Scuola |
+|---|---|---|
+| `gen.leonardo@nota.test`   | Laura Verdi | Leonardo da Vinci |
+| `gen.moro@nota.test`       | Paolo Neri  | Aldo Moro |
+| `gen.rodari@nota.test`     | Anna Riva   | Gianni Rodari |
+| `gen.montessori@nota.test` | Elena Conti | Maria Montessori |
+
+_(C'è anche l'operatore `operatore.dante@nota.test`, assegnato a 2 scuole: Dante Alighieri +
+Enrico Fermi — utile per vedere il selettore scuola lato operatore.)_
+
+---
+
 ## Cosa ho imparato
 
 Lavorando a questo progetto ho **approfondito Firebase** e studiato **un nuovo servizio** che

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useMySchools } from '../../hooks/useSchools'
 import { useOperators } from '../../hooks/useOperators'
@@ -9,6 +9,7 @@ import { useUserAdmin } from '../../hooks/useUserAdmin'
 import AppHeader from '../../components/AppHeader'
 import { PlatformCrest } from '../../components/PlatformCrest'
 import Crest from '../../components/Crest'
+import BackToDashboard from '../../components/admin/BackToDashboard'
 import NewSchoolForm from '../../components/admin/NewSchoolForm'
 import { schoolColor, schoolInitials } from '../../types'
 import type { UserProfile, WithId } from '../../types'
@@ -31,7 +32,7 @@ export default function AdminSettings() {
   if (loading || !profile || !user) {
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader emblem={<PlatformCrest variant="icon" size={30} />} title="NOTA" />
+        <AppHeader emblem={<PlatformCrest variant="icon" size={30} />} title="NOTA" right={<BackToDashboard />} />
         <p className="flex-1 grid place-items-center text-sm text-warmgray animate-pulse">Caricamento…</p>
       </div>
     )
@@ -39,12 +40,9 @@ export default function AdminSettings() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader emblem={<PlatformCrest variant="icon" size={30} />} title="NOTA" />
+      <AppHeader emblem={<PlatformCrest variant="icon" size={30} />} title="NOTA" right={<BackToDashboard />} />
 
       <main className="flex-1 mx-auto max-w-3xl w-full px-4 py-8 space-y-8">
-        <Link to="/admin" className="inline-flex items-center gap-1 text-sm text-warmgray hover:text-dustyblue transition-colors">
-          &larr; Torna alla dashboard
-        </Link>
 
         <div>
           <h1 className="font-serif text-2xl font-semibold">Impostazioni</h1>
