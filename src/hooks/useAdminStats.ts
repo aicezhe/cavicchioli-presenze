@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { db } from '../lib/firebase'
-import type { SchoolClass, WithId } from '../types'
+import type { AttendanceRecord, SchoolClass, WithId } from '../types'
 
 export type AdminStats = {
   classCount: number
@@ -18,10 +18,14 @@ const todayIso = () => new Date().toISOString().slice(0, 10)
  * Statistiche aggregate della scuola.
  *
  * classCount e operatorCount si ricavano SUBITO da `classes` (sincroni) → al cambio scuola
- * si aggiornano all'istante. childrenCount e presentPct richiedono getDocs su molte
+ * si aggiornano all'istante. childrenCount e presentPct richiedono letture su molte
  * sotto-collezioni: durante il ricalcolo valgono null (la UI mostra "…"), così non restano
- * mai i numeri della scuola precedente. Uso getDocs e non onSnapshot perché è un totale che
- * non serve aggiornare al millisecondo; ricalcolo al cambio classi o dopo una mutazione.
+ * mai i numeri della scuola precedente. Uso getDoc/getDocs e non onSnapshot perché è un totale
+ * che non serve aggiornare al millisecondo; ricalcolo al cambio classi o dopo una mutazione.
+ *
+ * Prestazioni: tutte le letture partono in parallelo (Promise.all), non in cascata, e per la
+ * presenza di oggi leggo il SINGOLO documento attendance/{oggi}, non l'intero storico del
+ * bambino. Così il ricalcolo resta veloce anche con molte classi e molti bambini.
  */
 export function useAdminStats(
   schoolId: string | undefined,
@@ -48,31 +52,38 @@ export function useAdminStats(
     setAggregate({ childrenCount: null, presentPct: null }) // "…" durante il ricalcolo
 
     async function compute() {
-      let childrenCount = 0
-      let presentCount = 0
+      const today = todayIso()
 
-      for (const cls of classes) {
-        const childrenSnap = await getDocs(
-          collection(db, 'schools', schoolId!, 'classes', cls.id, 'children'),
-        )
-        childrenCount += childrenSnap.size
+      // 1) Elenco bambini di ogni classe, in parallelo (una lettura per classe).
+      const childrenSnaps = await Promise.all(
+        classes.map((cls) =>
+          getDocs(collection(db, 'schools', schoolId!, 'classes', cls.id, 'children')),
+        ),
+      )
+      if (cancelled) return
 
-        for (const child of childrenSnap.docs) {
-          const attSnap = await getDocs(
-            collection(db, 'schools', schoolId!, 'classes', cls.id, 'children', child.id, 'attendance'),
-          )
-          // Presente oggi = presente ad almeno una sessione (mattina o pomeriggio)
-          const today = attSnap.docs.find((a) => a.id === todayIso())?.data()
-          if (today?.morning === true || today?.evening === true) presentCount += 1
-        }
-      }
+      const childrenCount = childrenSnaps.reduce((sum, snap) => sum + snap.size, 0)
 
-      if (!cancelled) {
-        setAggregate({
-          childrenCount,
-          presentPct: childrenCount > 0 ? Math.round((presentCount / childrenCount) * 100) : null,
-        })
-      }
+      // 2) Presenza di OGGI: leggo il singolo doc attendance/{oggi} di ogni bambino,
+      //    tutti in parallelo. Niente storico completo, niente cascata.
+      const attRefs = classes.flatMap((cls, i) =>
+        childrenSnaps[i].docs.map((child) =>
+          getDoc(doc(db, 'schools', schoolId!, 'classes', cls.id, 'children', child.id, 'attendance', today)),
+        ),
+      )
+      const attDocs = await Promise.all(attRefs)
+      if (cancelled) return
+
+      const presentCount = attDocs.reduce((count, snap) => {
+        const rec = snap.data() as AttendanceRecord | undefined
+        // Presente oggi = presente ad almeno una sessione (mattina o pomeriggio)
+        return rec?.morning === true || rec?.evening === true ? count + 1 : count
+      }, 0)
+
+      setAggregate({
+        childrenCount,
+        presentPct: childrenCount > 0 ? Math.round((presentCount / childrenCount) * 100) : null,
+      })
     }
 
     compute()
