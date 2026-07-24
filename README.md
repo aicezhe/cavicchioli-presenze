@@ -5,6 +5,10 @@ l'operatore registra ogni giorno chi viene preso in carico, il genitore verifica
 giorno le presenze del proprio figlio, l'amministratore gestisce scuole, classi, bambini e
 operatori. Progetto realizzato per il colloquio tecnico **byte3**.
 
+> **Perché "NOTA"?** Ho scelto questo nome perché in **latino** *nota* significa **segno,
+> marchio, annotazione** — cioè **"segnare/prendere nota"**. È esattamente ciò che fa la
+> piattaforma: *segnare le presenze*. Un nome breve, in tema e facile da ricordare.
+
 🔗 **Demo live:** https://schoolgiaccomo.web.app
 📦 **Repository:** https://github.com/aicezhe/cavicchioli-presenze
 
@@ -87,6 +91,44 @@ users/{uid}                              role, name, email, phone?, canManageRos
   in cache l'accesso di un altro account e **non c'è confusione tra utenti** al login.
 - **Test** — un paio di test unitari (Vitest) sui helper puri di dominio, per pulizia e come
   rete di sicurezza sulle regole di fallback (`npm test`).
+
+---
+
+## Problemi risolti durante lo sviluppo (storie dal codice)
+
+Alcune cose non sono venute giuste al primo colpo: le racconto perché mostrano come ho
+ragionato e sistemato i problemi mano a mano che li notavo provando l'app.
+
+- **Le statistiche caricavano lente → `useMemo`.** Il conteggio di bambini e classi rileggeva,
+  *in sequenza*, l'intero storico presenze di ogni bambino. L'ho reso **parallelo**
+  (`Promise.all`) e ho letto **solo il documento di oggi**. Restava un problema: il ricalcolo
+  scattava a ogni aggiornamento dell'array `classes` — anche solo assegnando un operatore, che
+  cambia il *riferimento* dell'array ma non l'insieme delle classi. Ho introdotto una **chiave
+  stabile memoizzata con `useMemo`** sugli id delle classi: ora la lettura pesante parte
+  **solo** quando si aggiunge o toglie davvero una classe. Stesso principio poi esteso ai
+  grafici delle statistiche (aggregazioni memoizzate + letture limitate agli ultimi ~13 mesi):
+  cambiare *giorno/settimana/mese* riaggrega all'istante, senza rileggere dal database.
+
+- **Le barre del grafico erano tutte "schiacciate".** Apparivano basse e uguali: le altezze in
+  percentuale non si risolvevano perché il contenitore non aveva un'altezza definita. Dando
+  un'altezza certa alle colonne le barre sono tornate in scala (più gradiente, angoli
+  arrotondati e crescita animata).
+
+- **"L'operatore vede solo una scuola".** All'inizio sembrava un problema di cache. Verificando
+  i dati reali ho scoperto che era un **limite vero**: un operatore può essere assegnato a
+  classi di **più scuole**. Ho aggiunto un **selettore scuola** nella schermata operatore, con
+  le classi filtrate per scuola e il tema che segue quella scelta.
+
+- **Confusione tra account "rimasti in cache".** Passando da un ruolo all'altro capitava di
+  ritrovarsi la sessione precedente. Ho **disattivato la persistenza** della sessione
+  (`inMemoryPersistence`), aggiunto un **cache-control** severo (`index.html` sempre fresco) e
+  **rimontato l'albero autenticato sull'uid**: al cambio utente non sopravvive nulla del
+  precedente e le credenziali sono richieste ogni volta.
+
+- **Il tema della scuola "non si aggiornava".** Ho verificato che la lettura era già in tempo
+  reale (`onSnapshot`) e i dati sul server corretti: nella maggior parte dei casi era la
+  **cache del browser**. Ho comunque irrobustito il codice azzerando il tema a ogni cambio di
+  scuola, così non mostra mai i dati di una scuola precedente durante la transizione.
 
 ---
 
