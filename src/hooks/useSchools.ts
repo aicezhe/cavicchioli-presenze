@@ -17,6 +17,8 @@ export type NewSchoolData = {
   name: string
   primaryColor?: string
   emblemInitials?: string
+  responsibleName?: string
+  responsiblePhone?: string
 }
 
 /**
@@ -137,10 +139,15 @@ export function useMySchools(uid: string | undefined) {
   // Iniziali vuote → deleteField() così tornano a derivarsi dal nome (schoolInitials).
   const updateSchool = useCallback(async (schoolId: string, data: NewSchoolData) => {
     const initials = data.emblemInitials?.trim().toUpperCase()
+    const respName = data.responsibleName?.trim()
+    const respPhone = data.responsiblePhone?.trim()
     await updateDoc(doc(db, 'schools', schoolId), {
       name: data.name.trim(),
       primaryColor: data.primaryColor || DEFAULT_SCHOOL_COLOR,
       emblemInitials: initials ? initials : deleteField(),
+      // Referente: campo rimosso se lasciato vuoto
+      responsibleName: respName ? respName : deleteField(),
+      responsiblePhone: respPhone ? respPhone : deleteField(),
     })
   }, [])
 

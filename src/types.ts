@@ -30,6 +30,10 @@ export type School = {
   primaryColor?: string
   /** Iniziali mostrate sull'emblema. Default: derivate dal nome */
   emblemInitials?: string
+  /** Referente del pre/post-scuola (direttore o responsabile), mostrato ai genitori
+      come contatto di riserva. Il documento scuola è a lettura pubblica. */
+  responsibleName?: string
+  responsiblePhone?: string
 }
 
 /** Colore di default della piattaforma quando la scuola non ne ha uno */

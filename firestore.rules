@@ -88,10 +88,11 @@ service cloud.firestore {
       allow update, delete: if signedIn() && request.auth.uid in resource.data.adminIds;
 
       match /classes/{classId} {
-        // Admin (get sul doc PADRE, path fisso → ammesso) oppure operatore assegnato
-        // (resource.data.operatorIds → filtrabile con array-contains). Entrambi ok nelle query.
-        allow read: if isSchoolAdmin(schoolId)
-          || (signedIn() && request.auth.uid in resource.data.operatorIds);
+        // Lettura consentita a qualsiasi utente autenticato: il documento classe contiene
+        // solo metadati NON sensibili (nome + operatorIds). Serve al genitore per sapere quali
+        // operatori seguono la classe del proprio figlio ("Contatta un operatore"). I dati
+        // riservati (bambini, presenze) restano protetti nelle sotto-collezioni qui sotto.
+        allow read: if signedIn();
         allow create, update, delete: if isSchoolAdmin(schoolId);
 
         match /children/{childId} {

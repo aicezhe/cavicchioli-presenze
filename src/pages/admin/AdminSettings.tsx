@@ -80,6 +80,8 @@ export default function AdminSettings() {
                   name: school.name,
                   primaryColor: schoolColor(school),
                   emblemInitials: school.emblemInitials,
+                  responsibleName: school.responsibleName,
+                  responsiblePhone: school.responsiblePhone,
                 }}
                 submitLabel="Salva modifiche"
                 savedLabel="Salvato ✓"

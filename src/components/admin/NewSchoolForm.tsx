@@ -20,6 +20,8 @@ export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea sc
   const [name, setName] = useState(initial?.name ?? '')
   const [color, setColor] = useState(initial?.primaryColor ?? SCHOOL_COLORS[0].value)
   const [initials, setInitials] = useState(initial?.emblemInitials ?? '')
+  const [respName, setRespName] = useState(initial?.responsibleName ?? '')
+  const [respPhone, setRespPhone] = useState(initial?.responsiblePhone ?? '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -33,7 +35,13 @@ export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea sc
     setError(null)
     setSaving(true)
     try {
-      await onSubmit({ name, primaryColor: color, emblemInitials: initials.trim() || undefined })
+      await onSubmit({
+        name,
+        primaryColor: color,
+        emblemInitials: initials.trim() || undefined,
+        responsibleName: respName.trim() || undefined,
+        responsiblePhone: respPhone.trim() || undefined,
+      })
       onDone?.()
       // In modalità modifica non si chiude nulla: mostra la conferma inline.
       if (savedLabel) {
@@ -101,6 +109,29 @@ export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea sc
         />
         <span className="mt-1 block text-xs text-warmgray">Lascia vuoto per derivarle dal nome.</span>
       </label>
+
+      {/* Referente pre/post-scuola: mostrato ai genitori come contatto di riserva */}
+      <div className="border-t border-black/10 pt-3">
+        <p className="text-sm font-medium">Referente pre/post-scuola</p>
+        <p className="text-xs text-warmgray mb-2">Direttore o responsabile — visibile ai genitori come contatto di riserva.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input
+            value={respName}
+            onChange={(e) => setRespName(e.target.value)}
+            placeholder="Nome referente"
+            className="w-full rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2.5
+                       focus:outline-none focus:ring-2 focus:ring-black/20"
+          />
+          <input
+            type="tel"
+            value={respPhone}
+            onChange={(e) => setRespPhone(e.target.value)}
+            placeholder="Telefono"
+            className="w-full rounded-lg border border-warmgray/40 bg-cream/50 px-3 py-2.5
+                       focus:outline-none focus:ring-2 focus:ring-black/20"
+          />
+        </div>
+      </div>
 
       {error && <p className="text-sm text-dustyblue">{error}</p>}
 

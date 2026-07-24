@@ -86,7 +86,13 @@ export default function GenitoreDashboard() {
 
       <main className="flex-1 mx-auto max-w-2xl w-full px-4 py-8 space-y-6">
         {view === 'contatti' ? (
-          <ContattiSection color={color} />
+          <ContattiSection
+            schoolId={active?.schoolId}
+            classId={active?.classId}
+            responsibleName={school?.responsibleName}
+            responsiblePhone={school?.responsiblePhone}
+            color={color}
+          />
         ) : (
           <>
             <div className="flex flex-wrap items-start justify-between gap-3">
