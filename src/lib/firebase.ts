@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getAuth, inMemoryPersistence, setPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 // Le chiavi sono identificatori client pubblici (non segreti),
@@ -19,4 +19,11 @@ const app = initializeApp(firebaseConfig)
 
 // Istanze uniche di Auth e Firestore condivise da tutta l'applicazione
 export const auth = getAuth(app)
+
+// NESSUNA persistenza della sessione: l'accesso NON viene salvato (né localStorage,
+// né IndexedDB, né tra le schede). A ogni apertura o ricarica bisogna reinserire le
+// credenziali. Così non resta in cache l'accesso di un altro account e non c'è confusione
+// quando si prova ad accedere con ruoli/utenti diversi.
+setPersistence(auth, inMemoryPersistence)
+
 export const db = getFirestore(app)
