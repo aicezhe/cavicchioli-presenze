@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
@@ -121,8 +121,19 @@ function PasswordSection({
   const parents = useUsersByRole('genitore')
   const { sendPasswordReset, setSecurityPin } = useUserAdmin()
 
+  // Lo sblocco vive SOLO in memoria (mai in storage): a ogni apertura si riparte da bloccato.
   const [unlocked, setUnlocked] = useState(false)
   const [changingPin, setChangingPin] = useState(false)
+
+  // Ri-blocca se la pagina viene ripristinata dalla cache di navigazione (bfcache Safari):
+  // così il PIN è richiesto SEMPRE all'ingresso, a prescindere dalla cache.
+  useEffect(() => {
+    const relock = (e: PageTransitionEvent) => {
+      if (e.persisted) setUnlocked(false)
+    }
+    window.addEventListener('pageshow', relock)
+    return () => window.removeEventListener('pageshow', relock)
+  }, [])
 
   // Chiave attesa: quella personalizzata dell'admin oppure quella predefinita (0101)
   const expectedPin = savedPin || DEFAULT_ADMIN_PIN
