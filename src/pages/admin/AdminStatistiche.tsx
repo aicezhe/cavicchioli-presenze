@@ -64,9 +64,11 @@ export default function AdminStatistiche() {
   const [grouping, setGrouping] = useState<Grouping>('giorni')
   const { byDate, childrenCount, loading } = useAttendanceStats(school?.id)
 
+  // Aggregazioni memoizzate: si ricalcolano SOLO quando cambiano i dati (byDate) o il
+  // raggruppamento. Cambiare Giorni/Settimane/Mesi NON rilegge dal database, riaggrega e basta.
   const bars = useMemo(() => buildBars(byDate, grouping), [byDate, grouping])
   const totalPresences = useMemo(() => Object.values(byDate).reduce((a, b) => a + b, 0), [byDate])
-  const activeDays = Object.keys(byDate).length
+  const activeDays = useMemo(() => Object.keys(byDate).length, [byDate])
 
   if (schoolsLoading) {
     return (

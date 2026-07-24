@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, documentId, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { AttendanceRecord } from '../types'
+
+// Le statistiche mostrano al massimo ~12 mesi: limito le letture a questa finestra
+// invece di scaricare l'intero storico di ogni bambino (meno letture = più veloce).
+const WINDOW_DAYS = 400
 
 export type AttendanceStats = {
   /** Presenze per giorno: { 'YYYY-MM-DD': numero di bambini presenti quel giorno } */
@@ -43,8 +47,16 @@ export function useAttendanceStats(schoolId: string | undefined): AttendanceStat
       if (cancelled) return
       const childRefs = childrenSnaps.flatMap((s) => s.docs.map((d) => d.ref))
 
-      // 2) Presenze di ogni bambino (tutto lo storico), in parallelo
-      const attSnaps = await Promise.all(childRefs.map((ref) => getDocs(collection(ref, 'attendance'))))
+      // 2) Presenze di ogni bambino nella finestra recente, in parallelo.
+      //    L'id del documento è la data (YYYY-MM-DD) → confronto lessicografico = cronologico.
+      const min = new Date()
+      min.setDate(min.getDate() - WINDOW_DAYS)
+      const minIso = min.toISOString().slice(0, 10)
+      const attSnaps = await Promise.all(
+        childRefs.map((ref) =>
+          getDocs(query(collection(ref, 'attendance'), where(documentId(), '>=', minIso))),
+        ),
+      )
       if (cancelled) return
 
       const map: Record<string, number> = {}
