@@ -102,6 +102,10 @@ export default function AdminSettings() {
 
 /* --------------------------------- Password --------------------------------- */
 
+// Chiave predefinita: si sblocca subito digitandola, senza doverla prima impostare.
+// L'admin può comunque sostituirla con una chiave personale ("Cambia chiave").
+const DEFAULT_ADMIN_PIN = '0101'
+
 function PasswordSection({
   adminUid,
   adminEmail,
@@ -120,23 +124,21 @@ function PasswordSection({
   const [unlocked, setUnlocked] = useState(false)
   const [changingPin, setChangingPin] = useState(false)
 
+  // Chiave attesa: quella personalizzata dell'admin oppure quella predefinita (0101)
+  const expectedPin = savedPin || DEFAULT_ADMIN_PIN
+
   return (
     <section className="space-y-4">
       <h2 className="font-serif text-xl font-semibold">Password</h2>
 
-      {!savedPin ? (
-        // Nessuna chiave impostata: prima si crea il PIN
-        <SetPinCard
-          title="Imposta la chiave di sicurezza"
-          hint="Un PIN che ti verrà chiesto per confermare i cambi password."
-          onSave={async (pin) => {
-            await setSecurityPin(adminUid, pin)
-            await refreshProfile()
-          }}
+      {!unlocked ? (
+        // Sempre lo stesso passo: inserisci il PIN per sbloccare i cambi password.
+        // Se non ne hai impostato uno tuo, vale la chiave predefinita 0101.
+        <UnlockCard
+          expected={expectedPin}
+          usingDefault={!savedPin}
+          onUnlock={() => setUnlocked(true)}
         />
-      ) : !unlocked ? (
-        // Chiave impostata ma bloccata: sblocca inserendo il PIN
-        <UnlockCard expected={savedPin} onUnlock={() => setUnlocked(true)} />
       ) : (
         <>
           <div className="flex items-center justify-between">
@@ -217,7 +219,7 @@ function SetPinCard({ title, hint, onSave }: { title: string; hint: string; onSa
   )
 }
 
-function UnlockCard({ expected, onUnlock }: { expected: string; onUnlock: () => void }) {
+function UnlockCard({ expected, usingDefault, onUnlock }: { expected: string; usingDefault: boolean; onUnlock: () => void }) {
   const [pin, setPin] = useState('')
   const [error, setError] = useState<string | null>(null)
 
@@ -234,7 +236,10 @@ function UnlockCard({ expected, onUnlock }: { expected: string; onUnlock: () => 
     <form onSubmit={submit} className="bg-white rounded-xl border border-dustyblue/40 p-5 space-y-3">
       <div>
         <p className="text-sm font-medium">Chiave di sicurezza</p>
-        <p className="text-xs text-warmgray mt-0.5">Inseriscila per sbloccare i cambi password.</p>
+        <p className="text-xs text-warmgray mt-0.5">
+          Inseriscila per sbloccare i cambi password di operatori e genitori.
+          {usingDefault && <span className="block">Chiave predefinita: <span className="font-mono font-semibold text-ink">0101</span>.</span>}
+        </p>
       </div>
       <input
         type="password"
