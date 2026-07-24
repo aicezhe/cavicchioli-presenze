@@ -5,6 +5,9 @@ import { useSchools } from '../hooks/useSchools'
 import Crest from '../components/Crest'
 import { schoolColor, schoolInitials } from '../types'
 
+// Curva morbida condivisa (decelerazione dolce) per un movimento fluido e coerente
+const EASE = [0.22, 1, 0.36, 1] as const
+
 /**
  * Directory delle scuole (livello piattaforma): l'utente sceglie la propria scuola.
  * All'apertura: prima appare il titolo con la linea, poi sale e l'elenco affiora.
@@ -29,9 +32,9 @@ export default function SchoolsPage() {
       <main className="flex-1 mx-auto max-w-4xl w-full px-4 py-10">
         {/* Titolo che sale in posizione + linea che si apre */}
         <motion.h1
-          initial={{ opacity: 0, y: 44 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.9, ease: EASE }}
           className="font-serif text-2xl sm:text-3xl font-semibold text-ink text-center"
         >
           Seleziona la tua scuola
@@ -39,7 +42,7 @@ export default function SchoolsPage() {
         <motion.div
           initial={{ opacity: 0, scaleX: 0 }}
           animate={{ opacity: 1, scaleX: 1 }}
-          transition={{ delay: 0.35, duration: 0.45, ease: 'easeOut' }}
+          transition={{ delay: 0.4, duration: 0.7, ease: EASE }}
           className="mt-3 h-px w-24 bg-dustyblue mx-auto origin-center"
           aria-hidden="true"
         />
@@ -56,12 +59,14 @@ export default function SchoolsPage() {
               return (
                 <motion.button
                   key={school.id}
-                  // Affiora dopo che il titolo è salito, in cascata
-                  initial={{ opacity: 0, y: 16 }}
+                  // Affiora dopo che il titolo è salito, in cascata morbida
+                  initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.05, duration: 0.4, ease: 'easeOut' }}
-                  whileHover={{ scale: 1.015 }}
-                  whileTap={{ scale: 0.99 }}
+                  transition={{ delay: 0.7 + i * 0.08, duration: 0.7, ease: EASE }}
+                  // Hover/tap elastici (spring): la transizione è dentro la variante,
+                  // così non tocca l'animazione d'ingresso qui sopra.
+                  whileHover={{ scale: 1.015, transition: { type: 'spring', stiffness: 260, damping: 26 } }}
+                  whileTap={{ scale: 0.99, transition: { type: 'spring', stiffness: 400, damping: 28 } }}
                   onMouseEnter={() => setHovered(school.id)}
                   onMouseLeave={() => setHovered(null)}
                   onFocus={() => setHovered(school.id)}
@@ -74,7 +79,7 @@ export default function SchoolsPage() {
                     backgroundColor: isHover ? `${color}12` : '#fff',
                   }}
                   className="group flex items-center gap-3.5 rounded-xl border px-4 py-3 text-left
-                             transition-colors duration-200"
+                             transition-colors duration-300 ease-out"
                 >
                   <Crest size={40} variant="compact" color={color} initials={schoolInitials(school)} />
                   <span className="font-serif text-lg font-semibold text-ink leading-snug">{school.name}</span>
