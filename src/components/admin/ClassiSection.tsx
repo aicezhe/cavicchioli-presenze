@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import ClassAccordion from './ClassAccordion'
 import Modal from './Modal'
+import { CLASS_SECTIONS, CLASS_YEARS, makeClassName } from '../../types'
 import type { SchoolClass, WithId } from '../../types'
 
 type ClassiSectionProps = {
@@ -28,13 +29,16 @@ export default function ClassiSection({
   openNonce,
 }: ClassiSectionProps) {
   const [showNewClass, setShowNewClass] = useState(false)
-  const [newClassName, setNewClassName] = useState('')
+  // Composizione guidata del nome: anno + sezione (niente testo libero)
+  const [year, setYear] = useState<number>(CLASS_YEARS[0])
+  const [section, setSection] = useState<string>(CLASS_SECTIONS[0])
+  const newName = makeClassName(year, section)
+  const alreadyExists = classes.some((c) => c.name === newName)
 
   async function handleAddClass(e: FormEvent) {
     e.preventDefault()
-    if (!newClassName.trim()) return
-    await addClass(newClassName)
-    setNewClassName('')
+    if (alreadyExists) return
+    await addClass(newName)
     setShowNewClass(false)
     onDataChange()
   }
@@ -74,22 +78,46 @@ export default function ClassiSection({
 
       <Modal open={showNewClass} title="Nuova classe" onClose={() => setShowNewClass(false)}>
         <form onSubmit={handleAddClass} className="space-y-4">
-          <label className="block">
-            <span className="text-sm font-medium">Nome della classe</span>
-            <input
-              required
-              autoFocus
-              value={newClassName}
-              onChange={(e) => setNewClassName(e.target.value)}
-              placeholder="Es. 1ª A"
-              className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
-                         focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
-            />
-          </label>
+          {/* Scelta guidata: anno (1–5) + sezione (A–E), con anteprima del nome */}
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="text-sm font-medium">Anno</span>
+              <select
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
+                           focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
+              >
+                {CLASS_YEARS.map((y) => (
+                  <option key={y} value={y}>{y}ª</option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium">Sezione</span>
+              <select
+                value={section}
+                onChange={(e) => setSection(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-warmgray/40 bg-white px-3 py-2.5
+                           focus:outline-none focus:ring-2 focus:ring-dustyblue/60 focus:border-dustyblue"
+              >
+                {CLASS_SECTIONS.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <p className="text-sm text-warmgray">
+            Classe: <span className="font-serif font-semibold text-ink">{newName}</span>
+            {alreadyExists && <span className="text-dustyblue"> · esiste già</span>}
+          </p>
+
           <div className="flex gap-3">
             <button
               type="submit"
-              className="flex-1 rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity"
+              disabled={alreadyExists}
+              className="flex-1 rounded-lg bg-dustyblue px-4 py-2.5 text-cream font-medium hover:opacity-90 transition-opacity disabled:opacity-40"
             >
               Crea
             </button>

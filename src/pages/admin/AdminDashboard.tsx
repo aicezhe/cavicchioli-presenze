@@ -27,15 +27,6 @@ const TABS = [
 ] as const
 type TabKey = (typeof TABS)[number]['key']
 
-function SettingsIcon() {
-  return (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  )
-}
-
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -105,22 +96,11 @@ export default function AdminDashboard() {
   // L'admin è a livello piattaforma: header NOTA (non il nome della scuola)
   const notaEmblem = <PlatformCrest variant="icon" size={30} />
 
-  // Icona ingranaggio nell'header → schermata Impostazioni
-  const settingsButton = (
-    <button
-      aria-label="Impostazioni"
-      onClick={goToSettings}
-      className="opacity-80 hover:opacity-100 transition-opacity"
-    >
-      <SettingsIcon />
-    </button>
-  )
-
   // Bootstrap: nessuna scuola → schermata di creazione della prima scuola
   if (!schoolsLoading && schools.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader tools menu={headerMenu} right={settingsButton} emblem={notaEmblem} title="NOTA" />
+        <AppHeader tools menu={headerMenu} emblem={notaEmblem} title="NOTA" />
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="w-full max-w-sm bg-white rounded-xl border border-black/10 p-6 sm:p-8">
             <h1 className="font-serif text-xl font-semibold text-dustyblue text-center">Crea la tua scuola</h1>
@@ -138,7 +118,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} right={settingsButton} emblem={notaEmblem} title="NOTA" />
+      <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} emblem={notaEmblem} title="NOTA" />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-4 py-8 space-y-8">
         {/* Le mie scuole: emblema + selettore scuola attiva + nuova scuola */}

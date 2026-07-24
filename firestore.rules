@@ -32,6 +32,12 @@ service cloud.firestore {
         && request.auth.uid in get(/databases/$(database)/documents/schools/$(schoolId)/classes/$(classId)).data.operatorIds;
     }
 
+    // L'operatore ha il permesso "gestione roster" (concesso dall'admin sul suo profilo).
+    // Campo assente → false (nessun permesso).
+    function canManageRoster() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('canManageRoster', false) == true;
+    }
+
     // Il genitore è collegato tramite l'email autenticata presente in parentEmails
     function isChildParent(schoolId, classId, childId) {
       return signedIn()
@@ -64,7 +70,10 @@ service cloud.firestore {
       // Nessuna auto-registrazione: gli account sono creati dalla scuola (il direttore
       // consegna le credenziali). Profili e ruoli li gestisce solo l'admin.
       allow create, update: if isAdmin();
-      allow delete: if false;
+      // L'admin può eliminare il PROFILO di un utente (es. rimuovere un genitore).
+      // NB: l'account Auth resta (serve l'Admin SDK per rimuoverlo); senza profilo
+      // l'utente non ha più ruolo nell'app.
+      allow delete: if isAdmin();
     }
 
     match /schools/{schoolId} {
@@ -91,7 +100,10 @@ service cloud.firestore {
           allow read: if isSchoolAdmin(schoolId)
             || isClassOperator(schoolId, classId)
             || (signedIn() && request.auth.token.email in resource.data.parentEmails);
-          allow create, update, delete: if isSchoolAdmin(schoolId);
+          // Scrivono la composizione: l'admin della scuola, oppure l'operatore assegnato
+          // alla classe SE ha il permesso "gestione roster" concesso dall'admin.
+          allow create, update, delete: if isSchoolAdmin(schoolId)
+            || (isClassOperator(schoolId, classId) && canManageRoster());
 
           match /attendance/{date} {
             allow read: if isSchoolAdmin(schoolId)

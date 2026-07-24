@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useOperators } from '../../hooks/useOperators'
 import { useProvisionUser } from '../../hooks/useProvisionUser'
+import { useUserAdmin } from '../../hooks/useUserAdmin'
 import Modal from './Modal'
 import AddUserForm from './AddUserForm'
-import type { SchoolClass, WithId } from '../../types'
+import EditOperatoreForm from './EditOperatoreForm'
+import type { SchoolClass, UserProfile, WithId } from '../../types'
 
 type OperatoriSectionProps = {
   classes: WithId<SchoolClass>[]
@@ -19,7 +21,9 @@ type OperatoriSectionProps = {
 export default function OperatoriSection({ classes, onToggle }: OperatoriSectionProps) {
   const operators = useOperators()
   const { provisionUser } = useProvisionUser()
+  const { updateUserName, setCanManageRoster } = useUserAdmin()
   const [showAdd, setShowAdd] = useState(false)
+  const [editing, setEditing] = useState<WithId<UserProfile> | null>(null)
 
   return (
     <section className="space-y-4">
@@ -41,9 +45,20 @@ export default function OperatoriSection({ classes, onToggle }: OperatoriSection
         <div className="space-y-3">
           {operators.map((op) => (
             <div key={op.id} className="bg-white rounded-xl border border-dustyblue/40 px-5 py-4">
-              <div className="flex flex-wrap items-baseline gap-x-2">
+              <div className="flex flex-wrap items-center gap-x-2">
                 <span className="font-medium">{op.name}</span>
                 <span className="text-sm text-warmgray">{op.email}</span>
+                {op.canManageRoster && (
+                  <span className="rounded-full bg-dustyblue/10 text-dustyblue text-xs font-medium px-2 py-0.5">
+                    Gestione classe
+                  </span>
+                )}
+                <button
+                  onClick={() => setEditing(op)}
+                  className="ml-auto text-sm text-dustyblue font-medium hover:underline"
+                >
+                  Modifica
+                </button>
               </div>
 
               <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-warmgray">
@@ -87,6 +102,26 @@ export default function OperatoriSection({ classes, onToggle }: OperatoriSection
           }}
           onDone={() => setShowAdd(false)}
         />
+      </Modal>
+
+      <Modal
+        open={editing !== null}
+        title={`Modifica operatore${editing ? ` · ${editing.name}` : ''}`}
+        onClose={() => setEditing(null)}
+      >
+        {editing && (
+          <EditOperatoreForm
+            initialName={editing.name}
+            initialCanManageRoster={editing.canManageRoster ?? false}
+            onSubmit={async (name, canManage) => {
+              if (name !== editing.name) await updateUserName(editing.id, name)
+              if (canManage !== (editing.canManageRoster ?? false)) {
+                await setCanManageRoster(editing.id, canManage)
+              }
+            }}
+            onDone={() => setEditing(null)}
+          />
+        )}
       </Modal>
     </section>
   )

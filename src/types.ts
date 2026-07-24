@@ -15,6 +15,12 @@ export type UserProfile = {
   email: string
   /** Telefono di contatto (usato per gli operatori nella rubrica dei genitori) */
   phone?: string
+  /** OPERATORE: se true può modificare la composizione (roster) delle proprie classi,
+      come un mini-admin. Assegnato dall'amministratore. */
+  canManageRoster?: boolean
+  /** ADMIN: chiave di sicurezza personale (PIN) per confermare i cambi password.
+      Leggibile solo dall'admin stesso (vedi regole users). */
+  securityPin?: string
 }
 
 export type School = {
@@ -60,6 +66,15 @@ export function schoolInitials(s: Pick<School, 'name' | 'emblemInitials'>): stri
 export type SchoolClass = {
   name: string
   operatorIds: string[]
+}
+
+/** Scelte per comporre il nome classe (niente testo libero): anno + sezione. */
+export const CLASS_YEARS = [1, 2, 3, 4, 5] as const
+export const CLASS_SECTIONS = ['A', 'B', 'C', 'D', 'E'] as const
+
+/** Nome classe canonico dai selettori, es. (2, 'B') → "2ª B". */
+export function makeClassName(year: number, section: string): string {
+  return `${year}ª ${section}`
 }
 
 export type Child = {
