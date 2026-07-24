@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   addDoc,
-  arrayUnion,
   collection,
+  deleteField,
   doc,
   onSnapshot,
   query,
@@ -129,15 +129,16 @@ export function useMySchools(uid: string | undefined) {
     [uid],
   )
 
-  // Rinomina la scuola (sezione Impostazioni)
-  const updateSchoolName = useCallback(async (schoolId: string, name: string) => {
-    await updateDoc(doc(db, 'schools', schoolId), { name: name.trim() })
+  // Aggiorna identità della scuola: nome + colore + iniziali (schermata Impostazioni).
+  // Iniziali vuote → deleteField() così tornano a derivarsi dal nome (schoolInitials).
+  const updateSchool = useCallback(async (schoolId: string, data: NewSchoolData) => {
+    const initials = data.emblemInitials?.trim().toUpperCase()
+    await updateDoc(doc(db, 'schools', schoolId), {
+      name: data.name.trim(),
+      primaryColor: data.primaryColor || DEFAULT_SCHOOL_COLOR,
+      emblemInitials: initials ? initials : deleteField(),
+    })
   }, [])
 
-  // Aggiunge un uid agli amministratori della scuola
-  const addSchoolAdmin = useCallback(async (schoolId: string, adminUid: string) => {
-    await updateDoc(doc(db, 'schools', schoolId), { adminIds: arrayUnion(adminUid) })
-  }, [])
-
-  return { schools, loading, createSchool, updateSchoolName, addSchoolAdmin }
+  return { schools, loading, createSchool, updateSchool }
 }

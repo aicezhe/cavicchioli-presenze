@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../context/AuthContext'
@@ -13,24 +14,33 @@ import StatsCards from '../../components/admin/StatsCards'
 import ClassiSection from '../../components/admin/ClassiSection'
 import OperatoriSection from '../../components/admin/OperatoriSection'
 import GenitoriSection from '../../components/admin/GenitoriSection'
-import ImpostazioniSection from '../../components/admin/ImpostazioniSection'
 import SearchModal from '../../components/admin/SearchModal'
 import Modal from '../../components/admin/Modal'
 import NewSchoolForm from '../../components/admin/NewSchoolForm'
 import { DEFAULT_SCHOOL_COLOR, schoolColor, schoolInitials } from '../../types'
 
-// Impostazioni non è una scheda: si apre dal menu hamburger
+// Le Impostazioni sono una schermata separata (/admin/settings), non una scheda.
 const TABS = [
   { key: 'classi', label: 'Classi' },
   { key: 'operatori', label: 'Operatori' },
   { key: 'genitori', label: 'Genitori' },
 ] as const
-type TabKey = (typeof TABS)[number]['key'] | 'impostazioni'
+type TabKey = (typeof TABS)[number]['key']
+
+function SettingsIcon() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  )
+}
 
 export default function AdminDashboard() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const { user, profile } = useAuth()
-  const { schools, loading: schoolsLoading, createSchool, updateSchoolName, addSchoolAdmin } =
-    useMySchools(user?.uid)
+  const { schools, loading: schoolsLoading, createSchool } = useMySchools(user?.uid)
 
   // Scuola attiva: le sezioni (classi, statistiche, ecc.) reagiscono a questo id
   const [activeSchoolId, setActiveSchoolId] = useState<string | null>(null)
@@ -49,8 +59,14 @@ export default function AdminDashboard() {
   const stats = useAdminStats(school?.id, classes, statsKey)
   const refreshStats = () => setStatsKey((k) => k + 1)
 
-  const [tab, setTab] = useState<TabKey>('classi')
+  // Scheda iniziale: 'operatori' se si arriva da "Gestisci" nelle Impostazioni
+  const initialTab: TabKey = (location.state as { tab?: TabKey } | null)?.tab ?? 'classi'
+  const [tab, setTab] = useState<TabKey>(initialTab)
   const [showNewSchool, setShowNewSchool] = useState(false)
+
+  // Vai alle Impostazioni portando con sé la scuola attiva (schermata separata)
+  const goToSettings = () =>
+    navigate(activeSchoolId ? `/admin/settings?school=${activeSchoolId}` : '/admin/settings')
 
   // Ricerca + salto a una classe
   const [showSearch, setShowSearch] = useState(false)
@@ -70,7 +86,7 @@ export default function AdminDashboard() {
       </div>
       <button
         onClick={() => {
-          setTab('impostazioni')
+          goToSettings()
           close()
         }}
         className="w-full text-left px-4 py-2 text-sm hover:bg-cream transition-colors"
@@ -89,11 +105,22 @@ export default function AdminDashboard() {
   // L'admin è a livello piattaforma: header NOTA (non il nome della scuola)
   const notaEmblem = <PlatformCrest variant="icon" size={30} />
 
+  // Icona ingranaggio nell'header → schermata Impostazioni
+  const settingsButton = (
+    <button
+      aria-label="Impostazioni"
+      onClick={goToSettings}
+      className="opacity-80 hover:opacity-100 transition-opacity"
+    >
+      <SettingsIcon />
+    </button>
+  )
+
   // Bootstrap: nessuna scuola → schermata di creazione della prima scuola
   if (!schoolsLoading && schools.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
-        <AppHeader tools menu={headerMenu} emblem={notaEmblem} title="NOTA" />
+        <AppHeader tools menu={headerMenu} right={settingsButton} emblem={notaEmblem} title="NOTA" />
         <main className="flex-1 flex items-center justify-center px-4">
           <div className="w-full max-w-sm bg-white rounded-xl border border-black/10 p-6 sm:p-8">
             <h1 className="font-serif text-xl font-semibold text-dustyblue text-center">Crea la tua scuola</h1>
@@ -111,7 +138,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} emblem={notaEmblem} title="NOTA" />
+      <AppHeader tools menu={headerMenu} onSearchClick={() => setShowSearch(true)} right={settingsButton} emblem={notaEmblem} title="NOTA" />
 
       <main className="flex-1 mx-auto max-w-5xl w-full px-4 py-8 space-y-8">
         {/* Le mie scuole: emblema + selettore scuola attiva + nuova scuola */}
@@ -184,13 +211,6 @@ export default function AdminDashboard() {
         )}
         {tab === 'genitori' && (
           <GenitoriSection childrenList={allChildren} setParentLink={setParentLink} />
-        )}
-        {school && tab === 'impostazioni' && (
-          <ImpostazioniSection
-            school={school}
-            updateSchoolName={updateSchoolName}
-            addSchoolAdmin={addSchoolAdmin}
-          />
         )}
       </main>
 

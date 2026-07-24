@@ -8,14 +8,20 @@ type NewSchoolFormProps = {
   onSubmit: (data: NewSchoolData) => Promise<void>
   onDone?: () => void
   submitLabel?: string
+  /** Valori iniziali: se presenti il form è in modalità modifica (prefill). */
+  initial?: NewSchoolData
+  /** Messaggio di conferma dopo il salvataggio (modalità modifica) */
+  savedLabel?: string
 }
 
-/** Form scuola: nome + colore (palette) + iniziali, con anteprima dell'emblema. */
-export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea scuola' }: NewSchoolFormProps) {
-  const [name, setName] = useState('')
-  const [color, setColor] = useState(SCHOOL_COLORS[0].value)
-  const [initials, setInitials] = useState('')
+/** Form scuola: nome + colore (palette) + iniziali, con anteprima dell'emblema.
+    Senza `initial` crea una scuola; con `initial` modifica quella esistente. */
+export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea scuola', initial, savedLabel }: NewSchoolFormProps) {
+  const [name, setName] = useState(initial?.name ?? '')
+  const [color, setColor] = useState(initial?.primaryColor ?? SCHOOL_COLORS[0].value)
+  const [initials, setInitials] = useState(initial?.emblemInitials ?? '')
   const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // Anteprima iniziali: quelle digitate o quelle derivate dal nome
@@ -29,9 +35,15 @@ export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea sc
     try {
       await onSubmit({ name, primaryColor: color, emblemInitials: initials.trim() || undefined })
       onDone?.()
+      // In modalità modifica non si chiude nulla: mostra la conferma inline.
+      if (savedLabel) {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2000)
+      }
     } catch (err) {
       console.error(err)
       setError('Impossibile salvare. Riprova.')
+    } finally {
       setSaving(false)
     }
   }
@@ -92,7 +104,7 @@ export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea sc
 
       {error && <p className="text-sm text-dustyblue">{error}</p>}
 
-      <div className="flex gap-3 pt-1">
+      <div className="flex items-center gap-3 pt-1">
         <button
           type="submit"
           disabled={saving}
@@ -110,6 +122,7 @@ export default function NewSchoolForm({ onSubmit, onDone, submitLabel = 'Crea sc
             Annulla
           </button>
         )}
+        {saved && savedLabel && <span className="text-sm text-dustyblue whitespace-nowrap">{savedLabel}</span>}
       </div>
     </form>
   )

@@ -6,6 +6,7 @@ import SchoolsPage from './pages/SchoolsPage'
 import SchoolRolePage from './pages/SchoolRolePage'
 import DashboardPage from './pages/DashboardPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminSettings from './pages/admin/AdminSettings'
 import OperatoreDashboard from './pages/operatore/OperatoreDashboard'
 import GenitoreDashboard from './pages/genitore/GenitoreDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -42,6 +43,7 @@ function App() {
           {/* Solo ruolo admin */}
           <Route element={<ProtectedRoute roles={['admin']} />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
 
           {/* Solo ruolo operatore */}
